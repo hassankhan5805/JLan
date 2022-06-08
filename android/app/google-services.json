@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "308805781539",
+    "project_id": "jlan123",
+    "storage_bucket": "jlan123.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308805781539:android:1da1f32dfac51fd243c996",
+        "android_client_info": {
+          "package_name": "com.example.jlan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "308805781539-q6403fl7ngi674gnkjkogf3j701ag7ej.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5dwZOx7_2fa-tWLW23kg5qsDUIuVqZio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "308805781539-q6403fl7ngi674gnkjkogf3j701ag7ej.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
