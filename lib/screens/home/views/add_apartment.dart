@@ -1,14 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jlan/controllers/tenant.dart';
 import 'package:jlan/models/apartment.dart';
-import 'package:jlan/screens/authentication/id_verification.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
-
 import '../../../controllers/loading.dart';
 import '../../../utils/constant/color.dart';
 

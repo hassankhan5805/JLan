@@ -1,8 +1,6 @@
 import 'package:jlan/models/admin.dart';
-import 'package:jlan/models/docs.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/auth.dart';
@@ -36,7 +34,7 @@ class ListAdmin extends StatelessWidget {
               width: 8,
             ),
           ],
-          title: Text('jlan',
+          title: Text('JLan',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w600,
@@ -77,7 +75,7 @@ class ListAdmin extends StatelessWidget {
                           // Get.to(() =>
                         },
                         child: Container(
-                          height: 80,
+                          height: 100,
                           margin:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           padding: EdgeInsets.all(8),
@@ -86,14 +84,48 @@ class ListAdmin extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16)),
                           alignment: Alignment.center,
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(
-                                width: 8,
+                              Icon(
+                                Icons.admin_panel_settings,
+                                size: 50,
                               ),
                               Text(
                                 '${data![index].name}',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    'Status: ${data[index].isAdmin!.contains("true") ? "Approved" : "Pending"}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        data[index].isAdmin!.contains("false"),
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          minimumSize: Size(90, 30),
+                                          primary: ColorsRes.primary,
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(30.0),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Services().updateElement(
+                                              "admin",
+                                              data[index].id!,
+                                              "isAdmin",
+                                              "true",
+                                              false);
+                                        },
+                                        child: Text("Approve")),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

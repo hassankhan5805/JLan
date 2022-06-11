@@ -15,8 +15,8 @@ import '../../utils/widgets/loading.dart';
 import 'signin.dart';
 
 class SignupScreen extends StatefulWidget {
-  bool? isAdmin = false;
-  SignupScreen({Key? key, this.isAdmin}) : super(key: key);
+  final bool? isAdmin;
+  SignupScreen(this.isAdmin, {Key? key}) : super(key: key);
 
   @override
   _SignupScreenState createState() => _SignupScreenState();
@@ -160,11 +160,6 @@ class _SignupScreenState extends State<SignupScreen>
                                     loading.isLoading(true);
                                     FocusScope.of(context).unfocus();
 
-                                    tenantController.tenant.value.name =
-                                        _nameController.text;
-                                    tenantController.tenant.value.email =
-                                        _emailController.text;
-
                                     createAccount(
                                       widget.isAdmin!
                                           ? "${_nameController.text}--Admin"
@@ -175,18 +170,26 @@ class _SignupScreenState extends State<SignupScreen>
                                       if (value != null) {
                                         HapticFeedback.lightImpact();
                                         if (widget.isAdmin!) {
+                                          print("writing admin");
                                           var x = admin(
-                                            name: _nameController.text,
-                                            email: _emailController.text,
-                                            isAdmin: "false",
-                                          );
+                                              name: _nameController.text,
+                                              email: _emailController.text,
+                                              isAdmin: "false",
+                                              id: FirebaseAuth
+                                                  .instance.currentUser!.uid);
                                           Services().setAdmin(x);
                                           FirebaseAuth.instance.currentUser!
-                                              .reload();
+                                              .reload()
+                                              .then((value) {
+                                            loading.isLoading(false);
+                                          });
+                                        } else {
+                                          print(
+                                              "else statement mean signup getting isAdmin as false");
                                         }
-                                        Get.to(
+                                        Get.offAll(
                                             () => IdVerification(
-                                                  isAdmin: widget.isAdmin,
+                                                  widget.isAdmin,
                                                 ),
                                             duration:
                                                 Duration(milliseconds: 700),
@@ -212,7 +215,7 @@ class _SignupScreenState extends State<SignupScreen>
                                     ..onTap = () {
                                       Get.off(
                                           () => SigninScreen(
-                                                isAdmin: widget.isAdmin,
+                                                widget.isAdmin,
                                               ),
                                           duration: Duration(milliseconds: 500),
                                           transition: Transition.rightToLeft);

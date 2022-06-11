@@ -1,7 +1,4 @@
-import 'package:jlan/models/admin.dart';
 import 'package:jlan/models/apartment.dart';
-import 'package:jlan/models/docs.dart';
-import 'package:jlan/models/tenants.dart';
 import 'package:jlan/screens/home/views/add_apartment.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
@@ -23,13 +20,7 @@ class ListApartment extends StatelessWidget {
           elevation: 0,
           centerTitle: true,
           backgroundColor: ColorsRes.primary,
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.search)),
-            SizedBox(
-              width: 8,
-            ),
-          ],
-          title: Text('jlan',
+          title: Text('JLan',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w600,

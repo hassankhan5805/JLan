@@ -67,7 +67,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Get.to(() => SigninScreen(),
+              Get.to(() => SigninScreen(false),
                   duration: Duration(milliseconds: 500),
                   transition: Transition.rightToLeft);
             },
@@ -88,7 +88,7 @@ class WelcomeScreen extends StatelessWidget {
           SizedBox(height: 24.0),
           GestureDetector(
             onTap: () {
-              Get.to(() => SignupScreen(),
+              Get.to(() => SignupScreen(false),
                   duration: Duration(milliseconds: 500),
                   transition: Transition.rightToLeft);
             },
@@ -112,7 +112,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Get.to(() => SigninScreen(isAdmin: true),
+              Get.to(() => SigninScreen(true),
                   duration: Duration(milliseconds: 500),
                   transition: Transition.rightToLeft);
             },

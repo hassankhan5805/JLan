@@ -2,19 +2,15 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:jlan/models/docs.dart';
 import 'package:jlan/models/payments.dart';
 import 'package:jlan/screens/home/views/add_payment.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import '../../../services/auth.dart';
 import '../../../utils/constant/color.dart';
-import '../../authentication/welcome.dart';
 
 class UserPayments extends StatelessWidget {
   final String? UID;
@@ -35,7 +31,7 @@ class UserPayments extends StatelessWidget {
               width: 8,
             ),
           ],
-          title: Text('jlan',
+          title: Text('JLan',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w600,

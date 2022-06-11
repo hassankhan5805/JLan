@@ -16,8 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../controllers/tenant.dart';
 import '../../../controllers/tenant.dart';
 import '../../../utils/constant/color.dart';
 
@@ -32,7 +30,7 @@ class TenantHome extends StatefulWidget {
 class _TenantHomeState extends State<TenantHome> {
   File? _imageFile;
   bool isFaceID = false;
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  // FirebaseAuth _auth = FirebaseAuth.instance;
   final tenantController = Get.find<TenantController>();
   late String? userImage;
   String? uid;

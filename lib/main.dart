@@ -102,6 +102,7 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    // signOut();
     _getStoragePermission();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
@@ -130,14 +131,32 @@ class SplashScreenState extends State<SplashScreen> {
     });
     Timer(const Duration(seconds: 3), () {
       if (_auth.currentUser != null) {
-        if (_auth.currentUser!.email == "admin@admin.com") {
-          //admin will go to
-          Get.offAll(AdminPanel());
-        } else if (_auth.currentUser!.displayName!.contains("false")) {
-          Get.offAll(IdVerification());
-        } else {
-          Get.offAll(TenantHome());
-        }
+        FirebaseAuth.instance.currentUser!.reload().then((value) {
+          //owner
+          if (_auth.currentUser!.email == "admin@admin.com") {
+            Get.offAll(AdminPanel());
+          } else if (_auth.currentUser!.displayName!.contains("false")) {
+            Get.offAll(IdVerification(false));
+          } else if (_auth.currentUser!.displayName!.contains("admin")) {
+            FirebaseFirestore.instance
+                .collection("admin")
+                .doc(_auth.currentUser!.uid)
+                .get()
+                .then((value) {
+              if (value["isAdmin"] == "true") {
+                Get.offAll(AdminPanel());
+              } else if (value["isAdmin"] == "false") {
+                Get.offAll(IdVerification(true));
+              } else {
+                Get.snackbar("Error", "Please try again");
+                signOut();
+                Get.to(WelcomeScreen());
+              }
+            });
+          } else {
+            Get.offAll(TenantHome());
+          }
+        });
       } else {
         Get.offAll(WelcomeScreen());
       }

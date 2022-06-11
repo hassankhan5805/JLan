@@ -1,10 +1,7 @@
-import 'package:jlan/models/admin.dart';
-import 'package:jlan/models/docs.dart';
 import 'package:jlan/models/tenants.dart';
 import 'package:jlan/screens/home/views/tenant_home.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/auth.dart';
@@ -38,7 +35,7 @@ class ListTenants extends StatelessWidget {
               width: 8,
             ),
           ],
-          title: Text('jlan',
+          title: Text('JLan',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w600,
@@ -110,7 +107,7 @@ class ListTenants extends StatelessWidget {
                               ),
                               Spacer(),
                               Text(
-                                'Balance ${data[index].balance}',
+                                'Balance : \$${data[index].balance}',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w500),
                               ),

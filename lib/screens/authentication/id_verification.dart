@@ -1,23 +1,17 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jlan/models/admin.dart';
+import 'package:jlan/screens/home/home.dart';
 import 'package:jlan/services/services.dart';
-
 import '../../controllers/loading.dart';
-import '../../services/auth.dart';
 import '../../utils/constant/color.dart';
 import '../../utils/widgets/loading.dart';
-import 'signup.dart';
 
 class IdVerification extends StatefulWidget {
   final bool? isAdmin;
-  const IdVerification({Key? key, this.isAdmin}) : super(key: key);
+  const IdVerification(this.isAdmin, {Key? key}) : super(key: key);
 
   @override
   _IdVerificationState createState() => _IdVerificationState();
@@ -32,14 +26,9 @@ class _IdVerificationState extends State<IdVerification>
   Animation<double>? _transform;
   final _formKey = GlobalKey<FormState>();
   TextEditingController apartmentID = TextEditingController();
-  String? displayName;
+  // String? displayName;
   @override
   void initState() {
-    if (FirebaseAuth.instance.currentUser != null) {
-      FirebaseAuth.instance.currentUser!.reload();
-      displayName = FirebaseAuth.instance.currentUser!.displayName!;
-    }
-
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 3),
@@ -79,18 +68,6 @@ class _IdVerificationState extends State<IdVerification>
       children: [
         Scaffold(
           extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: Icon(
-                  CupertinoIcons.back,
-                  size: 32,
-                )),
-          ),
           body: ScrollConfiguration(
             behavior: MyBehavior(),
             child: SingleChildScrollView(
@@ -126,12 +103,17 @@ class _IdVerificationState extends State<IdVerification>
                           ],
                         ),
                         child: Visibility(
-                          visible: !displayName!.contains("admin"),
+                          visible: !widget.isAdmin!,
                           replacement: StreamBuilder<admin>(
                               stream: Services().getOnlyAdmins(),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
+                                  if (snapshot.data!.isAdmin!
+                                      .contains("true")) {
+                                    Get.offAll(AdminPanel());
+                                  }
                                   return Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         "Wait Till Owner Allow",
@@ -141,11 +123,15 @@ class _IdVerificationState extends State<IdVerification>
                                           color: Colors.black.withOpacity(.7),
                                         ),
                                       ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                              "Status : ${snapshot.data!.isAdmin!.contains("true") ? "Approved" : "Pending"}")
-                                        ],
+                                      Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                                "Status : ${snapshot.data!.isAdmin!.contains("true") ? "Approved" : "Pending..."}")
+                                          ],
+                                        ),
                                       )
                                     ],
                                   );

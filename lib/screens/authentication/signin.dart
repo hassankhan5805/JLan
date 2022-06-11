@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -16,7 +17,7 @@ import 'signup.dart';
 
 class SigninScreen extends StatefulWidget {
   final bool? isAdmin;
-  const SigninScreen({Key? key, this.isAdmin}) : super(key: key);
+  const SigninScreen(this.isAdmin, {Key? key}) : super(key: key);
 
   @override
   _SigninScreenState createState() => _SigninScreenState();
@@ -66,6 +67,8 @@ class _SigninScreenState extends State<SigninScreen>
     _controller!.dispose();
     super.dispose();
   }
+
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +131,7 @@ class _SigninScreenState extends State<SigninScreen>
                             children: [
                               SizedBox(),
                               Text(
-                                widget.isAdmin != null && widget.isAdmin!
-                                    ? "Admin Sign In"
-                                    : 'Sign In',
+                                widget.isAdmin! ? "Admin Sign In" : 'Sign In',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600,
@@ -138,13 +139,6 @@ class _SigninScreenState extends State<SigninScreen>
                                 ),
                               ),
                               SizedBox(),
-                              // component1(Icons.account_circle_outlined,
-                              //     'User name...', false, false,(value) {
-                              //   if (value.isEmpty) {
-                              //     return 'Please enter your email';
-                              //   }
-                              //   return null;
-                              // },emailController),
                               component1(Icons.email_outlined, 'Email...',
                                   false, true, emailController),
                               component1(Icons.lock_outline, 'Password...',
@@ -178,21 +172,43 @@ class _SigninScreenState extends State<SigninScreen>
                                             loading.isLoading(false);
 
                                             HapticFeedback.lightImpact();
-                                            auth.currentUser!.reload();
-                                            auth.currentUser!.reload();
-                                            print(
-                                                "current uid after sigining is ${auth.currentUser!.uid}");
-                                            if (widget.isAdmin != null &&
-                                                widget.isAdmin!) {
-                                              Get.to(AdminPanel());
-                                            } else if (auth
-                                                .currentUser!.displayName!
-                                                .contains("false")) {
-                                              Get.offAll(
-                                                  () => IdVerification());
-                                            } else {
-                                              Get.offAll(() => TenantHome());
-                                            }
+                                            auth.currentUser!
+                                                .reload()
+                                                .then((value) {
+                                              try {
+                                                FirebaseFirestore.instance
+                                                    .collection("admin")
+                                                    .doc(_auth.currentUser!.uid)
+                                                    .get()
+                                                    .then((value) {
+                                                  if (_auth
+                                                          .currentUser!.email ==
+                                                      "admin@admin.com") {
+                                                    Get.offAll(AdminPanel());
+                                                  } else if (value["isAdmin"] ==
+                                                      "true") {
+                                                    Get.offAll(AdminPanel());
+                                                  } else if (value["isAdmin"] ==
+                                                      "false") {
+                                                    Get.offAll(
+                                                        IdVerification(true));
+                                                  } else {
+                                                    if (auth.currentUser!
+                                                        .displayName!
+                                                        .contains("false")) {
+                                                      Get.offAll(() =>
+                                                          IdVerification(
+                                                              false));
+                                                    } else {
+                                                      Get.offAll(
+                                                          () => TenantHome());
+                                                    }
+                                                  }
+                                                });
+                                              } catch (e) {
+                                                Get.offAll(() => TenantHome());
+                                              }
+                                            });
                                           }
                                         });
                                       }
@@ -244,7 +260,7 @@ class _SigninScreenState extends State<SigninScreen>
                                   ),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Get.off(() => SignupScreen(isAdmin:true),
+                                      Get.off(() => SignupScreen(widget.isAdmin),
                                           duration: Duration(milliseconds: 500),
                                           transition: Transition.rightToLeft);
                                     },

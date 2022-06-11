@@ -28,7 +28,6 @@ class Services {
 
   Stream<tenants> getUserProfile(String? id) {
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    FirebaseAuth _auth = FirebaseAuth.instance;
     return _firestore.collection("tenants").doc(id).snapshots().map((event) {
       return tenants.fromJson(event.data()!);
     });
@@ -45,11 +44,9 @@ class Services {
     String uid = FirebaseAuth.instance.currentUser!.uid;
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-    return _firestore
-        .collection('admin')
-        .doc(uid)
-        .snapshots()
-        .map((event) => admin.fromJson(event.data()!));
+    return _firestore.collection('admin').doc(uid).snapshots().map((event) {
+      return event.data() != null ? admin.fromJson(event.data()!) : admin();
+    });
   }
 
   Stream<List<apartment>>? getAllApartments() {
@@ -101,10 +98,12 @@ class Services {
   }
 
   Future<void> setAdmin(admin user) async {
+    print("inside set admin");
     await _firestore
-        .collection('tenants')
+        .collection('admin')
         .doc(_auth.currentUser!.uid)
-        .set(user.toJson());
+        .set(user.toJson())
+        .then((value) => print("writng complete"));
   }
 
   Future<void> setApartment(apartment user) async {
@@ -156,7 +155,7 @@ class Services {
   }
 
   apartmentVerification(String id) async {
-    var document = await _firestore
+    await _firestore
         .collection('apartments')
         .where("id", isEqualTo: id)
         .get()

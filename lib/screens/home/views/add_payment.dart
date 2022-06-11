@@ -1,18 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jlan/models/payments.dart';
 import 'package:jlan/utils/constant/color.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
-
-import '../../../models/docs.dart';
 import '../../../services/services.dart';
 
 class AddPayment extends StatefulWidget {
@@ -99,7 +92,6 @@ class _AddPaymentState extends State<AddPayment> {
                       ),
                       onPressed: () {
                         if (amountController.text.isNotEmpty &&
-                            amountController.text != null &&
                             amountController.text.isNum) {
                           setState(() {
                             amountEntered = true;

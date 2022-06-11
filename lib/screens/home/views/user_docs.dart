@@ -1,12 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:jlan/controllers/tenant.dart';
 import 'package:jlan/models/docs.dart';
 import 'package:jlan/services/services.dart';
@@ -16,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/constant/color.dart';
 
 class UserDocs extends StatefulWidget {
@@ -31,6 +27,7 @@ class _UserDocsState extends State<UserDocs> {
   @override
   void initState() {
     print(FirebaseAuth.instance.currentUser!.displayName);
+    super.initState();
   }
 
   // final tenantController = Get.find<tenantController>();
@@ -43,13 +40,8 @@ class _UserDocsState extends State<UserDocs> {
           elevation: 0,
           centerTitle: true,
           backgroundColor: ColorsRes.primary,
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.search)),
-            SizedBox(
-              width: 8,
-            ),
-          ],
-          title: Text('jlan Tech',
+          
+          title: Text('JLan',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w600,
