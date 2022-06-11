@@ -60,6 +60,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
           Icon(
             Icons.apartment,
+            color: Colors.white,
             size: 230,
           ),
           SizedBox(

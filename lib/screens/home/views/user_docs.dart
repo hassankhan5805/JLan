@@ -8,7 +8,6 @@ import 'package:jlan/controllers/tenant.dart';
 import 'package:jlan/models/docs.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';

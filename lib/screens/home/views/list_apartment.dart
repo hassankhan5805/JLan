@@ -2,7 +2,6 @@ import 'package:jlan/models/apartment.dart';
 import 'package:jlan/screens/home/views/add_apartment.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../utils/constant/color.dart';

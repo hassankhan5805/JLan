@@ -1,6 +1,7 @@
 import 'package:jlan/models/tenants.dart';
 import 'package:jlan/screens/home/views/tenant_home.dart';
 import 'package:jlan/services/services.dart';
+import 'package:jlan/utils/signout.dart';
 import 'package:jlan/utils/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,15 +23,7 @@ class ListTenants extends StatelessWidget {
           centerTitle: true,
           backgroundColor: ColorsRes.primary,
           actions: [
-            IconButton(
-                onPressed: () {
-                  // tenantController.user.value = tenants();
-                  // Services().updateElement(
-                  //     "users", "", "token", "null", true);
-                  signOut();
-                  Get.offAll(WelcomeScreen());
-                },
-                icon: Icon(Icons.logout_rounded, color: Colors.white)),
+           SignOut(),
             SizedBox(
               width: 8,
             ),

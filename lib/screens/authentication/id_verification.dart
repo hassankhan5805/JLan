@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jlan/models/admin.dart';
+import 'package:jlan/screens/authentication/welcome.dart';
 import 'package:jlan/screens/home/home.dart';
+import 'package:jlan/services/auth.dart';
 import 'package:jlan/services/services.dart';
 import '../../controllers/loading.dart';
 import '../../utils/constant/color.dart';
@@ -63,139 +64,160 @@ class _IdVerificationState extends State<IdVerification>
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Scaffold(
-          extendBodyBehindAppBar: true,
-          body: ScrollConfiguration(
-            behavior: MyBehavior(),
-            child: SingleChildScrollView(
-              child: SizedBox(
-                height: size.height,
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.black,
-                        ColorsRes.primary,
-                      ],
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+          elevation: 0,
+          centerTitle: true,
+          backgroundColor: ColorsRes.primary,
+          actions: [
+           
+            SizedBox(
+              width: 8,
+            ),
+          ],
+          title: Text('JLan',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ))),
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          Scaffold(
+            extendBodyBehindAppBar: true,
+            body: ScrollConfiguration(
+              behavior: MyBehavior(),
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  height: size.height,
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.black,
+                          ColorsRes.primary,
+                        ],
+                      ),
                     ),
-                  ),
-                  child: Opacity(
-                    opacity: _opacity!.value,
-                    child: Transform.scale(
-                      scale: _transform!.value,
-                      child: Container(
-                        width: size.width * .9,
-                        height: size.width * 1.1,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(.1),
-                              blurRadius: 90,
-                            ),
-                          ],
-                        ),
-                        child: Visibility(
-                          visible: !widget.isAdmin!,
-                          replacement: StreamBuilder<admin>(
-                              stream: Services().getOnlyAdmins(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  if (snapshot.data!.isAdmin!
-                                      .contains("true")) {
-                                    Get.offAll(AdminPanel());
+                    child: Opacity(
+                      opacity: _opacity!.value,
+                      child: Transform.scale(
+                        scale: _transform!.value,
+                        child: Container(
+                          width: size.width * .9,
+                          height: size.width * 1.1,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(.1),
+                                blurRadius: 90,
+                              ),
+                            ],
+                          ),
+                          child: Visibility(
+                            visible: !widget.isAdmin!,
+                            replacement: StreamBuilder<admin>(
+                                stream: Services().getOnlyAdmins(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data!.isAdmin!
+                                        .contains("true")) {
+                                      Get.offAll(AdminPanel());
+                                    }
+                                    return Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Wait Till Owner Allow",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black.withOpacity(.7),
+                                          ),
+                                        ),
+                                        Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                  "Status : ${snapshot.data!.isAdmin!.contains("true") ? "Approved" : "Pending..."}")
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    );
+                                  } else {
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
                                   }
-                                  return Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Wait Till Owner Allow",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black.withOpacity(.7),
-                                        ),
-                                      ),
-                                      Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                                "Status : ${snapshot.data!.isAdmin!.contains("true") ? "Approved" : "Pending..."}")
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  );
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                              }),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                SizedBox(),
-                                Text(
-                                  'apartment ID verification',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black.withOpacity(.7),
+                                }),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  SizedBox(),
+                                  Text(
+                                    'apartment ID verification',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black.withOpacity(.7),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(),
-                                // component1(Icons.account_circle_outlined,
-                                //     'User name...', false, false,(value) {
-                                //   if (value.isEmpty) {
-                                //     return 'Please enter your email';
-                                //   }
-                                //   return null;
-                                // },emailController),
-                                component1(Icons.edit, 'ID...', false, false,
-                                    apartmentID),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    component2(
-                                      'Verify',
-                                      2.6,
-                                      () async {
-                                        FocusScope.of(context).unfocus();
-                                        if (apartmentID.text.isEmpty)
-                                          validator("Field is Required ");
-                                        else {
-                                          loading.isLoading(true);
+                                  SizedBox(),
+                                  // component1(Icons.account_circle_outlined,
+                                  //     'User name...', false, false,(value) {
+                                  //   if (value.isEmpty) {
+                                  //     return 'Please enter your email';
+                                  //   }
+                                  //   return null;
+                                  // },emailController),
+                                  component1(Icons.edit, 'ID...', false, false,
+                                      apartmentID),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 16,
+                                      ),
+                                      component2(
+                                        'Verify',
+                                        2.6,
+                                        () async {
                                           FocusScope.of(context).unfocus();
-                                          Services()
-                                              .apartmentVerification(
-                                                  apartmentID.text)
-                                              .then((value) {
-                                            loading.isLoading(false);
-                                          });
-                                        }
-                                      },
-                                    ),
-                                    SizedBox(),
-                                  ],
-                                ),
+                                          if (apartmentID.text.isEmpty)
+                                            validator("Field is Required ");
+                                          else {
+                                            loading.isLoading(true);
+                                            FocusScope.of(context).unfocus();
+                                            Services()
+                                                .apartmentVerification(
+                                                    apartmentID.text)
+                                                .then((value) {
+                                              loading.isLoading(false);
+                                            });
+                                          }
+                                        },
+                                      ),
+                                      SizedBox(),
+                                    ],
+                                  ),
 
-                                SizedBox(),
-                              ],
+                                  SizedBox(),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -206,9 +228,9 @@ class _IdVerificationState extends State<IdVerification>
               ),
             ),
           ),
-        ),
-        LoadingWidget()
-      ],
+          LoadingWidget()
+        ],
+      ),
     );
   }
 

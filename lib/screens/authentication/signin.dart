@@ -168,44 +168,74 @@ class _SigninScreenState extends State<SigninScreen>
                                             .then((value) {
                                           if (value == null) {
                                             loading.isLoading(false);
+                                            Get.snackbar(
+                                                "Error", "Please try again",
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM);
                                           } else {
-                                            loading.isLoading(false);
-
                                             HapticFeedback.lightImpact();
                                             auth.currentUser!
                                                 .reload()
                                                 .then((value) {
                                               try {
-                                                FirebaseFirestore.instance
-                                                    .collection("admin")
-                                                    .doc(_auth.currentUser!.uid)
-                                                    .get()
-                                                    .then((value) {
-                                                  if (_auth
-                                                          .currentUser!.email ==
-                                                      "admin@admin.com") {
-                                                    Get.offAll(AdminPanel());
-                                                  } else if (value["isAdmin"] ==
-                                                      "true") {
-                                                    Get.offAll(AdminPanel());
-                                                  } else if (value["isAdmin"] ==
-                                                      "false") {
-                                                    Get.offAll(
-                                                        IdVerification(true));
-                                                  } else {
-                                                    if (auth.currentUser!
-                                                        .displayName!
-                                                        .contains("false")) {
-                                                      Get.offAll(() =>
-                                                          IdVerification(
-                                                              false));
-                                                    } else {
+                                                print("printing email");
+                                                print(FirebaseAuth.instance
+                                                    .currentUser!.email);
+                                                if (FirebaseAuth.instance
+                                                        .currentUser!.email ==
+                                                    "admin@admin.com") {
+                                                  loading.isLoading(false);
+
+                                                  Get.offAll(AdminPanel());
+                                                } else if (FirebaseAuth.instance
+                                                    .currentUser!.displayName!
+                                                    .contains("admin")) {
+                                                  FirebaseFirestore.instance
+                                                      .collection("admin")
+                                                      .doc(_auth
+                                                          .currentUser!.uid)
+                                                      .get()
+                                                      .then((value) {
+                                                    if (value["isAdmin"] ==
+                                                        "true") {
+                                                      loading.isLoading(false);
+
+                                                      Get.offAll(AdminPanel());
+                                                    } else if (value[
+                                                            "isAdmin"] ==
+                                                        "false") {
+                                                      loading.isLoading(false);
+
                                                       Get.offAll(
-                                                          () => TenantHome());
+                                                          IdVerification(true));
+                                                    } else {
+                                                      if (auth.currentUser!
+                                                          .displayName!
+                                                          .contains("false")) {
+                                                        loading
+                                                            .isLoading(false);
+
+                                                        Get.offAll(() =>
+                                                            IdVerification(
+                                                                false));
+                                                      } else {
+                                                        loading
+                                                            .isLoading(false);
+
+                                                        Get.offAll(
+                                                            () => TenantHome());
+                                                      }
                                                     }
-                                                  }
-                                                });
+                                                  });
+                                                } else {
+                                                  loading.isLoading(false);
+
+                                                  Get.offAll(
+                                                      () => TenantHome());
+                                                }
                                               } catch (e) {
+                                                loading.isLoading(false);
+
                                                 Get.offAll(() => TenantHome());
                                               }
                                             });
@@ -260,7 +290,8 @@ class _SigninScreenState extends State<SigninScreen>
                                   ),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Get.off(() => SignupScreen(widget.isAdmin),
+                                      Get.off(
+                                          () => SignupScreen(widget.isAdmin),
                                           duration: Duration(milliseconds: 500),
                                           transition: Transition.rightToLeft);
                                     },

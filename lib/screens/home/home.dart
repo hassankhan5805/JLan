@@ -54,8 +54,8 @@ class _AdminPanelState extends State<AdminPanel> {
             button(
                 onTap: () => onTapped(0),
                 flag: _selectedIndex == 0,
-                activeIcon: CupertinoIcons.house_fill,
-                inactiveIcon: CupertinoIcons.home,
+                activeIcon: CupertinoIcons.person_2,
+                inactiveIcon: CupertinoIcons.person_2,
                 label: 'Tenants'),
             SizedBox(
               width: 22,
@@ -63,8 +63,8 @@ class _AdminPanelState extends State<AdminPanel> {
             button(
                 onTap: () => onTapped(1),
                 flag: _selectedIndex == 1,
-                activeIcon: CupertinoIcons.person_3_fill,
-                inactiveIcon: CupertinoIcons.person_3,
+                activeIcon: CupertinoIcons.house_alt_fill,
+                inactiveIcon: CupertinoIcons.house_fill,
                 label: 'Apartments'),
             SizedBox(
               width: 22,
@@ -72,8 +72,8 @@ class _AdminPanelState extends State<AdminPanel> {
             button(
                 onTap: () => onTapped(2),
                 flag: _selectedIndex == 2,
-                activeIcon: Icons.settings,
-                inactiveIcon: Icons.settings_outlined,
+                activeIcon: Icons.admin_panel_settings_outlined,
+                inactiveIcon: Icons.admin_panel_settings,
                 label: 'Admins'),
           ],
         ),

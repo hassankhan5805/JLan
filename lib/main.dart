@@ -187,6 +187,7 @@ class SplashScreenState extends State<SplashScreen> {
         children: [
           Icon(
             Icons.apartment,
+            color: Colors.white,
             size: 230,
           ),
           Text(

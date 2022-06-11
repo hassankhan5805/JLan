@@ -15,7 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:jlan/utils/signout.dart';
 import '../../../controllers/tenant.dart';
 import '../../../utils/constant/color.dart';
 
@@ -32,33 +32,18 @@ class _TenantHomeState extends State<TenantHome> {
   bool isFaceID = false;
   // FirebaseAuth _auth = FirebaseAuth.instance;
   final tenantController = Get.find<TenantController>();
-  late String? userImage;
+  // late String? userImage;
   String? uid;
   @override
   void initState() {
     uid = widget.UID == null
         ? FirebaseAuth.instance.currentUser!.uid
         : widget.UID!;
+
     if (tenantController.imageFile != null) {
       _imageFile = tenantController.imageFile;
     }
     super.initState();
-  }
-
-  void sendEmail() async {
-    final Uri params = Uri(
-        scheme: 'mailto',
-        path: 'myOwnEmailAddress@gmail.com',
-        queryParameters: {
-          'subject': 'Default Subject',
-          'body': 'Default body'
-        });
-    String url = params.toString();
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      print('Could not launch $url');
-    }
   }
 
   @override
@@ -86,9 +71,6 @@ class _TenantHomeState extends State<TenantHome> {
               stream: Services().getUserProfile(uid),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  userImage = tenantController.tenant.value.profileURL != null
-                      ? tenantController.tenant.value.profileURL
-                      : null;
                   tenantController.tenant.value = snapshot.data!;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,16 +92,7 @@ class _TenantHomeState extends State<TenantHome> {
                                 fontWeight: FontWeight.w600),
                           ),
                           Spacer(),
-                          IconButton(
-                              onPressed: () {
-                                tenantController.tenant.value = tenants();
-                                // Services().updateElement(
-                                //     "users", "", "token", "null", true);
-                                signOut();
-                                Get.offAll(WelcomeScreen());
-                              },
-                              icon: Icon(Icons.logout_rounded,
-                                  color: Colors.white)),
+                          SignOut(),
                         ],
                       ),
                       SizedBox(
@@ -135,9 +108,13 @@ class _TenantHomeState extends State<TenantHome> {
                                 radius: 52,
                                 backgroundImage: _imageFile != null
                                     ? FileImage(File(_imageFile!.path))
-                                    : userImage != null
-                                        ? NetworkImage(userImage!)
-                                            as ImageProvider
+                                    : tenantController
+                                                    .tenant.value.profileURL !=
+                                                null &&
+                                            !tenantController.tenant.value
+                                                .profileURL!.isEmpty
+                                        ? NetworkImage(tenantController.tenant
+                                            .value.profileURL!) as ImageProvider
                                         : AssetImage('assets/images/user.png'),
                               )),
                           Positioned(
@@ -392,7 +369,9 @@ class _TenantHomeState extends State<TenantHome> {
 
   Future uploadFile() async {
     String profileURL;
-    String fileName = FirebaseAuth.instance.currentUser!.uid;
+    String fileName = widget.UID != null
+        ? widget.UID!
+        : FirebaseAuth.instance.currentUser!.uid;
     Reference reference = FirebaseStorage.instance.ref().child(fileName);
     UploadTask uploadTask = reference.putFile(_imageFile!);
     var storageTaskSnapshot;
@@ -403,7 +382,7 @@ class _TenantHomeState extends State<TenantHome> {
           // userImage!=null?FirebaseStorage.instance.refFromURL(userImage!).delete():null;
           profileURL = downloadUrl;
           setState(() {
-            userImage = downloadUrl as String;
+            tenantController.tenant.value.profileURL = downloadUrl as String;
           });
           FirebaseFirestore.instance
               .collection('tenants')

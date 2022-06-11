@@ -17,11 +17,10 @@ class Services {
   Services.internal();
   final tenantController = Get.find<TenantController>();
 
-  Stream<List<tenants>>? getAllTenants({bool? filter, bool? collab}) {
+  Stream<List<tenants>>? getAllTenants() {
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     return _firestore.collection('tenants').snapshots().map((event) {
-      // print(event.docs.first.data());
       return event.docs.map((e) => tenants.fromJson(e.data())).toList();
     });
   }
@@ -98,7 +97,6 @@ class Services {
   }
 
   Future<void> setAdmin(admin user) async {
-    print("inside set admin");
     await _firestore
         .collection('admin')
         .doc(_auth.currentUser!.uid)
