@@ -1,11 +1,11 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:jlan/controllers/tenant.dart';
+import 'package:jlan/screens/authentication/id_verification.dart';
 import '../../controllers/loading.dart';
-import '../../controllers/user.dart';
 import '../../services/auth.dart';
 import '../../utils/constant/color.dart';
 import '../../utils/widgets/loading.dart';
@@ -20,7 +20,7 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen>
     with SingleTickerProviderStateMixin {
-  final userController = Get.find<UserController>();
+  final tenantController = Get.find<TenantController>();
   final loading = Get.find<LoadingController>();
   AnimationController? _controller;
   Animation<double>? _opacity;
@@ -156,9 +156,9 @@ class _SignupScreenState extends State<SignupScreen>
                                     loading.isLoading(true);
                                     FocusScope.of(context).unfocus();
 
-                                    userController.user.value.name =
+                                    tenantController.tenant.value.name =
                                         _nameController.text;
-                                    userController.user.value.email =
+                                    tenantController.tenant.value.email =
                                         _emailController.text;
 
                                     createAccount(
@@ -168,10 +168,10 @@ class _SignupScreenState extends State<SignupScreen>
                                     ).then((value) {
                                       if (value != null) {
                                         HapticFeedback.lightImpact();
-                                        // Get.to(() => ProfessionScreen(),
-                                            // duration:
-                                            //     Duration(milliseconds: 700),
-                                            // transition: Transition.rightToLeft);
+                                        Get.to(() => IdVerification(),
+                                            duration:
+                                                Duration(milliseconds: 700),
+                                            transition: Transition.rightToLeft);
                                         loading.isLoading(false);
                                       } else {
                                         loading.isLoading(false);

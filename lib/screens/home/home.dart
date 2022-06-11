@@ -1,17 +1,19 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jlan/screens/home/views/list_admin.dart';
+import 'package:jlan/screens/home/views/list_apartment.dart';
+import 'package:jlan/screens/home/views/list_tenants.dart';
 
 import '../../utils/constant/color.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class AdminPanel extends StatefulWidget {
+  const AdminPanel({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<AdminPanel> createState() => _AdminPanelState();
 }
 
-class _HomeState extends State<Home> {
+class _AdminPanelState extends State<AdminPanel> {
   int? _selectedIndex = 0;
   final pageController = PageController(initialPage: 0);
   void onTapped(int index) {
@@ -29,7 +31,7 @@ class _HomeState extends State<Home> {
       body: PageView(
         controller: pageController,
         physics: NeverScrollableScrollPhysics(),
-        // children: [HomeScreen(), MatchesScreen(), SettingsScreen()],
+        children: [ListTenants(), ListApartment(), ListAdmin()],
         onPageChanged: (index) {
           setState(() {
             _selectedIndex = index;
@@ -54,7 +56,7 @@ class _HomeState extends State<Home> {
                 flag: _selectedIndex == 0,
                 activeIcon: CupertinoIcons.house_fill,
                 inactiveIcon: CupertinoIcons.home,
-                label: 'Home'),
+                label: 'Tenants'),
             SizedBox(
               width: 22,
             ),
@@ -63,7 +65,7 @@ class _HomeState extends State<Home> {
                 flag: _selectedIndex == 1,
                 activeIcon: CupertinoIcons.person_3_fill,
                 inactiveIcon: CupertinoIcons.person_3,
-                label: 'Matches'),
+                label: 'Apartments'),
             SizedBox(
               width: 22,
             ),
@@ -72,7 +74,7 @@ class _HomeState extends State<Home> {
                 flag: _selectedIndex == 2,
                 activeIcon: Icons.settings,
                 inactiveIcon: Icons.settings_outlined,
-                label: 'Settings'),
+                label: 'Admins'),
           ],
         ),
       ),

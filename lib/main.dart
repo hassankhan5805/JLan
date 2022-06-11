@@ -7,7 +7,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:jlan/controllers/loading.dart';
-import 'package:jlan/controllers/user.dart';
+import 'package:jlan/screens/authentication/id_verification.dart';
+import 'package:jlan/screens/home/home.dart';
+import 'package:jlan/screens/home/views/tenant_home.dart';
+import 'package:jlan/screens/authentication/welcome.dart';
+import 'package:jlan/services/auth.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:sizer/sizer.dart';
+import 'package:jlan/controllers/tenant.dart';
 import 'firebase_options.dart';
 import 'utils/constant/color.dart';
 
@@ -42,25 +49,29 @@ Future<void> main() async {
     sound: true,
   );
   Get.put(LoadingController());
-  Get.put(UserController());
+  Get.put(TenantController());
+  Get.put(ApartmentController());
+  Get.put(DocController());
   // Notifications().initNotifications();
 
-  runApp(const CozyApp());
+  runApp(const JlanApp());
 }
 
-class CozyApp extends StatelessWidget {
-  const CozyApp({Key? key}) : super(key: key);
+class JlanApp extends StatelessWidget {
+  const JlanApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Cozy Tech',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: SplashScreen(),
-      initialRoute: '/',
-    );
+    return Sizer(builder: (context, orientation, deviceType) {
+      return GetMaterialApp(
+        title: 'Jlan',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: SplashScreen(),
+        initialRoute: '/',
+      );
+    });
   }
 }
 
@@ -71,17 +82,27 @@ class SplashScreen extends StatefulWidget {
   }
 }
 
+bool permissionGranted = false;
+
 class SplashScreenState extends State<SplashScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  GetData() async {
-    var a =
-        await FirebaseFirestore.instance.collection('users').snapshots().first;
-    print(a.docs);
+  Future _getStoragePermission() async {
+    if (await Permission.storage.request().isGranted) {
+      setState(() {
+        permissionGranted = true;
+      });
+    } else if (await Permission.storage.request().isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.storage.request().isDenied) {
+      setState(() {
+        permissionGranted = false;
+      });
+    }
   }
 
   @override
   void initState() {
-    GetData();
+    _getStoragePermission();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
@@ -108,13 +129,18 @@ class SplashScreenState extends State<SplashScreen> {
       }
     });
     Timer(const Duration(seconds: 3), () {
-      // if (_auth.currentUser !=
-      //     null) if (_auth.currentUser!.displayName!.split('--').last == "false")
-      //   Get.offAll(ProfessionScreen());
-      // else
-      //   Get.offAll(Home());
-      // else
-      //   Get.offAll(WelcomeScreen());
+      if (_auth.currentUser != null) {
+        if (_auth.currentUser!.email == "admin@admin.com") {
+          //admin will go to
+          Get.offAll(AdminPanel());
+        } else if (_auth.currentUser!.displayName!.contains("false")) {
+          Get.offAll(IdVerification());
+        } else {
+          Get.offAll(TenantHome());
+        }
+      } else {
+        Get.offAll(WelcomeScreen());
+      }
     });
     super.initState();
   }
@@ -140,12 +166,12 @@ class SplashScreenState extends State<SplashScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Image.asset(
-          //   "assets/logo.png",
-          //   width: MediaQuery.of(context).size.width / 2,
-          // ),
+          Icon(
+            Icons.apartment,
+            size: 230,
+          ),
           Text(
-            'Cozy Tech Labs',
+            'Jlan ',
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
@@ -155,7 +181,7 @@ class SplashScreenState extends State<SplashScreen> {
           ),
           Center(
             child: Text(
-              'Connect. Collab. Change the world',
+              'Manage your apartment rent here',
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: Colors.white,

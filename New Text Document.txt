@@ -1,0 +1,66 @@
+// i Registered a new Firebase ios app on Firebase project jlan123.
+// Firebase configuration file lib\firebase_options.dart generated successfully with the following Firebase apps:
+// Platform  Firebase App Id
+// android   1: 308805781539:android: 1da1f32dfac51fd243c996
+// ios       1: 308805781539:ios: 6ab8b811707a5cc743c996
+// Learn more about using this file and next steps from the documentation:
+//  > https: //firebase.google.com/docs/flutter/setup
+// PS D:\Fiverr\Fiverr projects\jlan> 
+{
+    "profileURL": "asfddddddddddddddddddddddddddddddddddddddddddsfaf",
+    "apartmentID": "asfdafda23",
+    "balance": "2344",
+    "name": "hasan",
+    "id": "Z3RNw3TrDzp4DKyntTW1",
+    "email": "adf@sfd.dfs"
+}
+
+{
+    "date": "12/22/2",
+    "photoURL": "afdsfasdfasfdfddddddddddddddddddddddfadf",
+    "amount": "324.3",
+    "payID": "asdfd12",
+    "isApproved": "false"
+}
+
+ {
+    "name": "aggrement",
+    "docURL": "asasdffasfasfsadfsfasdfdddddddddddddddddddddddddddddaffa"
+}
+{"period": "1", "id": "dsfsfa", "incremental": "34", "rent": "234"}
+1. splash screen
+2. welcome shows login/signup for tenants and login for admins
+3. if user signup/signin as tenant they will then asked for apartmentID 
+4. if id is verified they will registered in collection and then goes to 
+tenant homepage (there name will be set from name--false to name)
+5. on homepage they have profile with balance above head
+6. with 2 buttons add payment and add docs
+finally a logout button
+admin
+for admin they will have 2 tabs
+            tenants
+            apartment
+by entering tenant they will navigate to same user profile
+models:
+    1. tenant ✔
+    2. apartment ✔
+    3. docs ✔
+    4. patment ✔
+    5. admin ✔
+servies :
+get methods all
+    1. get all users  ✔
+    2. get single user(profile) ✔
+    3. get admins ✔ (model has to made)
+    4. get apartment ✔
+    5. get user docs ✔
+    6. get user payments don't use current id  ✔
+post 
+    1. user ✔
+    2. admin ✔
+    3. apartment ✔
+    4. user docs ✔
+    5. user payment ✔
+    6. update element  ✔
+apartment verification ✔
+logout ✔

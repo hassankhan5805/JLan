@@ -1,9 +1,12 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:jlan/screens/authentication/id_verification.dart';
+import 'package:jlan/screens/home/home.dart';
+import 'package:jlan/screens/home/views/tenant_home.dart';
 
 import '../../controllers/loading.dart';
 import '../../services/auth.dart';
@@ -12,7 +15,8 @@ import '../../utils/widgets/loading.dart';
 import 'signup.dart';
 
 class SigninScreen extends StatefulWidget {
-  const SigninScreen({Key? key}) : super(key: key);
+  final bool? isAdmin;
+  const SigninScreen({Key? key, this.isAdmin}) : super(key: key);
 
   @override
   _SigninScreenState createState() => _SigninScreenState();
@@ -20,6 +24,7 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen>
     with SingleTickerProviderStateMixin {
+  FirebaseAuth auth = FirebaseAuth.instance;
   final loading = Get.find<LoadingController>();
   AnimationController? _controller;
   Animation<double>? _opacity;
@@ -123,7 +128,9 @@ class _SigninScreenState extends State<SigninScreen>
                             children: [
                               SizedBox(),
                               Text(
-                                'Sign In',
+                                widget.isAdmin != null && widget.isAdmin!
+                                    ? "Admin Sign In"
+                                    : 'Sign In',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600,
@@ -171,11 +178,21 @@ class _SigninScreenState extends State<SigninScreen>
                                             loading.isLoading(false);
 
                                             HapticFeedback.lightImpact();
-                                            // Get.offAll(() => Home(),
-                                                // duration:
-                                                //     Duration(milliseconds: 500),
-                                                // transition:
-                                                //     Transition.rightToLeft);
+                                            auth.currentUser!.reload();
+                                            auth.currentUser!.reload();
+                                            print(
+                                                "current uid after sigining is ${auth.currentUser!.uid}");
+                                            if (widget.isAdmin != null &&
+                                                widget.isAdmin!) {
+                                              Get.to(AdminPanel());
+                                            } else if (auth
+                                                .currentUser!.displayName!
+                                                .contains("false")) {
+                                              Get.offAll(
+                                                  () => IdVerification());
+                                            } else {
+                                              Get.offAll(() => TenantHome());
+                                            }
                                           }
                                         });
                                       }
