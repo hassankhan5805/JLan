@@ -2,6 +2,7 @@ import 'package:jlan/models/admin.dart';
 import 'package:jlan/models/apartment.dart';
 import 'package:jlan/models/docs.dart';
 import 'package:jlan/models/tenants.dart';
+import 'package:jlan/screens/home/views/add_apartment.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
 import 'package:flutter/cupertino.dart';
@@ -69,7 +70,7 @@ class ListApartment extends StatelessWidget {
                           // Get.to(() =>
                         },
                         child: Container(
-                          height: 80,
+                          height: 100,
                           margin:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           padding: EdgeInsets.all(8),
@@ -78,14 +79,51 @@ class ListApartment extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16)),
                           alignment: Alignment.center,
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              SizedBox(
-                                width: 8,
+                              Icon(Icons.apartment,
+                                  color: Colors.black, size: 30),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    'ID : ${data![index].id}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Text(
+                                    'Period : ${data[index].period}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Text(
+                                    'Occupied: ${data[index].occupiedBy!.contains('null') ? 'No' : 'Yes'}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                '${data![index].id}',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    'Rent : ${data[index].rent}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Text(
+                                    '% : ${data[index].incremental}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -96,6 +134,14 @@ class ListApartment extends StatelessWidget {
                 return Center(child: LoadingWidget());
               }
             }),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        child: Icon(Icons.add, color: Colors.black),
+        onPressed: () {
+          Get.to(AddApartment());
+        },
       ),
     );
   }

@@ -22,7 +22,8 @@ import '../../../controllers/tenant.dart';
 import '../../../utils/constant/color.dart';
 
 class TenantHome extends StatefulWidget {
-  const TenantHome({Key? key}) : super(key: key);
+  final String? UID;
+  const TenantHome({Key? key, this.UID}) : super(key: key);
 
   @override
   State<TenantHome> createState() => _TenantHomeState();
@@ -34,9 +35,12 @@ class _TenantHomeState extends State<TenantHome> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   final tenantController = Get.find<TenantController>();
   late String? userImage;
-
+  String? uid;
   @override
   void initState() {
+    uid = widget.UID == null
+        ? FirebaseAuth.instance.currentUser!.uid
+        : widget.UID!;
     if (tenantController.imageFile != null) {
       _imageFile = tenantController.imageFile;
     }
@@ -81,7 +85,7 @@ class _TenantHomeState extends State<TenantHome> {
         child: SingleChildScrollView(
           padding: EdgeInsets.zero,
           child: StreamBuilder<tenants>(
-              stream: Services().getUserProfile(),
+              stream: Services().getUserProfile(uid),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   userImage = tenantController.tenant.value.profileURL != null
@@ -275,7 +279,9 @@ class _TenantHomeState extends State<TenantHome> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        Get.to(UserDocs());
+                                        Get.to(UserDocs(
+                                          UID: widget.UID,
+                                        ));
                                       },
                                       child: Text("Docs")),
                                   // Spacer(),
@@ -289,7 +295,9 @@ class _TenantHomeState extends State<TenantHome> {
                                         ),
                                       ),
                                       onPressed: () {
-                                        Get.to(UserPayments());
+                                        Get.to(UserPayments(
+                                          UID: widget.UID,
+                                        ));
                                       },
                                       child: Text("Payments")),
                                 ],

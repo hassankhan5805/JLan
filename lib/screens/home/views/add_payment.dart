@@ -134,7 +134,7 @@ class _AddPaymentState extends State<AddPayment> {
 
 //step 2 upload file
   Future uploadFile(File file) async {
-    String uid = widget.UID != null
+    String uid = widget.UID == null
         ? FirebaseAuth.instance.currentUser!.uid
         : widget.UID!;
 
@@ -151,7 +151,7 @@ class _AddPaymentState extends State<AddPayment> {
             amount: amountController.text,
             photoURL: downloadUrl,
             payID: fileName,
-            date: docID,
+            date: DateTime.now().toString(),
             isApproved: "false",
           );
           Services()
@@ -167,7 +167,6 @@ class _AddPaymentState extends State<AddPayment> {
       throwError(err.toString());
     });
   }
-
 
   throwError(String a) {
     Get.snackbar(

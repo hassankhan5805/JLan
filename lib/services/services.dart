@@ -26,14 +26,10 @@ class Services {
     });
   }
 
-  Stream<tenants> getUserProfile({String? id}) {
+  Stream<tenants> getUserProfile(String? id) {
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
     FirebaseAuth _auth = FirebaseAuth.instance;
-    return _firestore
-        .collection("tenants")
-        .doc(id != null ? id : _auth.currentUser!.uid)
-        .snapshots()
-        .map((event) {
+    return _firestore.collection("tenants").doc(id).snapshots().map((event) {
       return tenants.fromJson(event.data()!);
     });
   }
@@ -43,6 +39,17 @@ class Services {
 
     return _firestore.collection('admin').snapshots().map(
         (event) => event.docs.map((e) => admin.fromJson(e.data())).toList());
+  }
+
+  Stream<admin>? getOnlyAdmins() {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    return _firestore
+        .collection('admin')
+        .doc(uid)
+        .snapshots()
+        .map((event) => admin.fromJson(event.data()!));
   }
 
   Stream<List<apartment>>? getAllApartments() {
@@ -61,7 +68,7 @@ class Services {
     });
   }
 
-  Stream<List<docs>>? getUserDocs({String? id}) {
+  Stream<List<docs>>? getUserDocs(String? id) {
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     return _firestore
@@ -73,12 +80,12 @@ class Services {
             (event) => event.docs.map((e) => docs.fromJson(e.data())).toList());
   }
 
-  Stream<List<payments>>? getUserPayments({String? id}) {
+  Stream<List<payments>>? getUserPayments(String? id) {
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     return _firestore
         .collection('tenants')
-        .doc(_auth.currentUser!.uid)
+        .doc(id != null ? id : _auth.currentUser!.uid)
         .collection("payments")
         .snapshots()
         .map((event) {
@@ -101,10 +108,7 @@ class Services {
   }
 
   Future<void> setApartment(apartment user) async {
-    await _firestore
-        .collection('apartment')
-        .doc(_auth.currentUser!.uid)
-        .set(user.toJson());
+    await _firestore.collection('apartments').doc(user.id).set(user.toJson());
   }
 
   Future<void> setDoc(docs user, String? UID) async {
@@ -120,7 +124,8 @@ class Services {
         .collection('tenants')
         .doc(UID)
         .collection("payments")
-        .add(user.toJson());
+        .doc(user.date)
+        .set(user.toJson());
   }
 
   updateElement(String col, String doc, String key, var value, bool currentUser,
@@ -132,6 +137,22 @@ class Services {
     if (updateName) {
       _auth.currentUser!.updateDisplayName(value);
     }
+  }
+
+  updateInnerElement(
+    String col,
+    String doc,
+    String col1,
+    String doc1,
+    String key,
+    var value,
+  ) {
+    FirebaseFirestore.instance
+        .collection(col)
+        .doc(doc)
+        .collection(col1)
+        .doc(doc1)
+        .update({key: value});
   }
 
   apartmentVerification(String id) async {
@@ -148,7 +169,7 @@ class Services {
           updateElement(
               "apartments", id, "occupiedBy", _auth.currentUser!.uid, false);
           var x = tenants(
-            name: _auth.currentUser!.displayName,
+            name: _auth.currentUser!.displayName!.split('--').first,
             email: _auth.currentUser!.email,
             id: _auth.currentUser!.uid,
             apartmentID: id,

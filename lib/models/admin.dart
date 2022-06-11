@@ -4,7 +4,7 @@ class admin {
   String? email;
   String? isAdmin;
 
-  admin({this.name, this.id, this.email});
+  admin({this.name, this.id, this.email, this.isAdmin});
 
   admin.fromJson(Map<String, dynamic> json) {
     isAdmin = json['isAdmin'];

@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:jlan/models/admin.dart';
 import 'package:jlan/services/services.dart';
 
 import '../../controllers/loading.dart';
@@ -29,9 +32,14 @@ class _IdVerificationState extends State<IdVerification>
   Animation<double>? _transform;
   final _formKey = GlobalKey<FormState>();
   TextEditingController apartmentID = TextEditingController();
-
+  String? displayName;
   @override
   void initState() {
+    if (FirebaseAuth.instance.currentUser != null) {
+      FirebaseAuth.instance.currentUser!.reload();
+      displayName = FirebaseAuth.instance.currentUser!.displayName!;
+    }
+
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 3),
@@ -117,61 +125,92 @@ class _IdVerificationState extends State<IdVerification>
                             ),
                           ],
                         ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              SizedBox(),
-                              Text(
-                                'apartment ID verification',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black.withOpacity(.7),
+                        child: Visibility(
+                          visible: !displayName!.contains("admin"),
+                          replacement: StreamBuilder<admin>(
+                              stream: Services().getOnlyAdmins(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Column(
+                                    children: [
+                                      Text(
+                                        "Wait Till Owner Allow",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black.withOpacity(.7),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              "Status : ${snapshot.data!.isAdmin!.contains("true") ? "Approved" : "Pending"}")
+                                        ],
+                                      )
+                                    ],
+                                  );
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                              }),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SizedBox(),
+                                Text(
+                                  'apartment ID verification',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black.withOpacity(.7),
+                                  ),
                                 ),
-                              ),
-                              SizedBox(),
-                              // component1(Icons.account_circle_outlined,
-                              //     'User name...', false, false,(value) {
-                              //   if (value.isEmpty) {
-                              //     return 'Please enter your email';
-                              //   }
-                              //   return null;
-                              // },emailController),
-                              component1(Icons.edit, 'ID...', false, false,
-                                  apartmentID),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: 16,
-                                  ),
-                                  component2(
-                                    'Verify',
-                                    2.6,
-                                    () async {
-                                      FocusScope.of(context).unfocus();
-                                      if (apartmentID.text.isEmpty)
-                                        validator("Field is Required ");
-                                      else {
-                                        loading.isLoading(true);
+                                SizedBox(),
+                                // component1(Icons.account_circle_outlined,
+                                //     'User name...', false, false,(value) {
+                                //   if (value.isEmpty) {
+                                //     return 'Please enter your email';
+                                //   }
+                                //   return null;
+                                // },emailController),
+                                component1(Icons.edit, 'ID...', false, false,
+                                    apartmentID),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    component2(
+                                      'Verify',
+                                      2.6,
+                                      () async {
                                         FocusScope.of(context).unfocus();
-                                        Services()
-                                            .apartmentVerification(
-                                                apartmentID.text)
-                                            .then((value) {
-                                          loading.isLoading(false);
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(),
-                                ],
-                              ),
+                                        if (apartmentID.text.isEmpty)
+                                          validator("Field is Required ");
+                                        else {
+                                          loading.isLoading(true);
+                                          FocusScope.of(context).unfocus();
+                                          Services()
+                                              .apartmentVerification(
+                                                  apartmentID.text)
+                                              .then((value) {
+                                            loading.isLoading(false);
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    SizedBox(),
+                                  ],
+                                ),
 
-                              SizedBox(),
-                            ],
+                                SizedBox(),
+                              ],
+                            ),
                           ),
                         ),
                       ),

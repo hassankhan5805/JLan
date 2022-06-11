@@ -1,6 +1,7 @@
 import 'package:jlan/models/admin.dart';
 import 'package:jlan/models/docs.dart';
 import 'package:jlan/models/tenants.dart';
+import 'package:jlan/screens/home/views/tenant_home.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/widgets/loading.dart';
 import 'package:flutter/cupertino.dart';
@@ -77,7 +78,8 @@ class ListTenants extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          // Get.to(() =>
+                          Get.to(TenantHome(UID: data![index].id));
+                          print(data[index].id);
                         },
                         child: Container(
                           height: 80,
@@ -93,10 +95,27 @@ class ListTenants extends StatelessWidget {
                               SizedBox(
                                 width: 8,
                               ),
+                              CircleAvatar(
+                                backgroundColor: Colors.transparent,
+                                radius: 30,
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.black,
+                                ),
+                              ),
                               Text(
                                 '${data![index].name}',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                              Spacer(),
+                              Text(
+                                'Balance ${data[index].balance}',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(
+                                width: 8,
                               ),
                             ],
                           ),

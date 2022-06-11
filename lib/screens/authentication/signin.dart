@@ -244,7 +244,7 @@ class _SigninScreenState extends State<SigninScreen>
                                   ),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Get.off(() => SignupScreen(),
+                                      Get.off(() => SignupScreen(isAdmin:true),
                                           duration: Duration(milliseconds: 500),
                                           transition: Transition.rightToLeft);
                                     },

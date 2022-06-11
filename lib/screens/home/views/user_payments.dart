@@ -17,7 +17,8 @@ import '../../../utils/constant/color.dart';
 import '../../authentication/welcome.dart';
 
 class UserPayments extends StatelessWidget {
-  UserPayments({Key? key}) : super(key: key);
+  final String? UID;
+  UserPayments({Key? key, this.UID}) : super(key: key);
   // final tenantController = Get.find<tenantController>();
 
   @override
@@ -55,7 +56,7 @@ class UserPayments extends StatelessWidget {
           ),
         ),
         child: StreamBuilder<List<payments>>(
-            stream: Services().getUserPayments(),
+            stream: Services().getUserPayments(UID),
             builder: (context, snapshot) {
               print(snapshot.data);
               if (snapshot.hasData) {
@@ -78,7 +79,7 @@ class UserPayments extends StatelessWidget {
                               snapshot.data![index].photoURL);
                         },
                         child: Container(
-                          height: 80,
+                          height: 100,
                           margin:
                               EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           padding: EdgeInsets.all(8),
@@ -100,17 +101,47 @@ class UserPayments extends StatelessWidget {
                                         fontWeight: FontWeight.w500),
                                   ),
                                   Text(
-                                    'Date: ${data[index].date}',
+                                    'Date: ${data[index].date!.split(" ").first}',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
-                              Text(
-                                'Status: ${data[index].isApproved!.contains("true") ? "Approved" : "Pending"}',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              Column(
+                                children: [
+                                  Text(
+                                    'Status: ${data[index].isApproved!.contains("true") ? "Approved" : "Pending"}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  Visibility(
+                                    visible: UID != null &&
+                                        data[index]
+                                            .isApproved!
+                                            .contains("false"),
+                                    child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          minimumSize: Size(90, 30),
+                                          primary: ColorsRes.primary,
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(30.0),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Services().updateInnerElement(
+                                              "tenants",
+                                              UID!,
+                                              "payments",
+                                              data[index].date!,
+                                              "isApproved",
+                                              "true");
+                                        },
+                                        child: Text("Approve")),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -126,11 +157,13 @@ class UserPayments extends StatelessWidget {
           backgroundColor: Colors.white,
           child: Icon(Icons.add, color: Colors.black),
           onPressed: () {
-            Get.to(AddPayment());
+            Get.to(AddPayment(
+              UID: UID,
+            ));
           }),
     );
   }
-  
+
 //download file from url provided by firebaes storage and extract from collection
   downloadFile(String? fileName, String? myUrl) async {
     HttpClient httpClient = new HttpClient();
@@ -158,7 +191,8 @@ class UserPayments extends StatelessWidget {
           .then((value) async => await OpenFile.open(file.path));
     });
   }
-    throwError(String a) {
+
+  throwError(String a) {
     Get.snackbar(
       "$a",
       "",

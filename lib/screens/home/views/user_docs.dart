@@ -21,13 +21,18 @@ import '../../../utils/constant/color.dart';
 
 class UserDocs extends StatefulWidget {
   final String? UID;
-  UserDocs({Key? key,this.UID}) : super(key: key);
+  UserDocs({Key? key, this.UID}) : super(key: key);
 
   @override
   State<UserDocs> createState() => _UserDocsState();
 }
 
 class _UserDocsState extends State<UserDocs> {
+  @override
+  void initState() {
+    print(FirebaseAuth.instance.currentUser!.displayName);
+  }
+
   // final tenantController = Get.find<tenantController>();
   @override
   Widget build(BuildContext context) {
@@ -65,7 +70,7 @@ class _UserDocsState extends State<UserDocs> {
           ),
         ),
         child: StreamBuilder<List<docs>>(
-            stream: Services().getUserDocs(),
+            stream: Services().getUserDocs(widget.UID),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data!.isEmpty) {
@@ -169,7 +174,9 @@ class _UserDocsState extends State<UserDocs> {
 
 //step 2 upload file
   Future uploadFile(File file) async {
-    String uid = widget.UID!=null? FirebaseAuth.instance.currentUser!.uid : widget.UID!;
+    String uid = widget.UID == null
+        ? FirebaseAuth.instance.currentUser!.uid
+        : widget.UID!;
     String docID = DateTime.now().toString();
     Reference reference =
         FirebaseStorage.instance.ref("/$uid/docs").child(docID);
@@ -184,7 +191,9 @@ class _UserDocsState extends State<UserDocs> {
             docURL: downloadUrl,
             docID: docID,
           );
-          Services().setDoc(x,uid).then((value) => throwError("File uploaded"));
+          Services()
+              .setDoc(x, uid)
+              .then((value) => throwError("File uploaded"));
         }, onError: (err) {
           throwError(err.toString());
         });
