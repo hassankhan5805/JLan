@@ -185,10 +185,10 @@ class SplashScreenState extends State<SplashScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            Icons.apartment,
-            color: Colors.white,
-            size: 230,
+          Image.asset(
+            "assets/images/jlan2.png",
+            width: 300,
+            height: 300,
           ),
           Text(
             'Jlan ',

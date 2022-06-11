@@ -83,7 +83,7 @@ class _TenantHomeState extends State<TenantHome> {
                                 fontWeight: FontWeight.w600),
                           ),
                           Text(
-                            '\$${tenantController.tenant.value.balance}',
+                            '-\$${tenantController.tenant.value.balance}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:jlan/models/admin.dart';
 import 'package:jlan/screens/home/home.dart';
 import 'package:jlan/services/services.dart';
+import 'package:jlan/utils/signout.dart';
 import '../../controllers/loading.dart';
 import '../../utils/constant/color.dart';
 import '../../utils/widgets/loading.dart';
@@ -72,9 +73,7 @@ class _IdVerificationState extends State<IdVerification>
               centerTitle: true,
               backgroundColor: ColorsRes.primary,
               actions: [
-                SizedBox(
-                  width: 8,
-                ),
+                SignOut()
               ],
               title: Text('JLan',
                   style: TextStyle(

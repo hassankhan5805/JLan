@@ -178,7 +178,6 @@ class _SigninScreenState extends State<SigninScreen>
                                                 .reload()
                                                 .then((value) {
                                               try {
-                                                print("printing email");
                                                 print(FirebaseAuth.instance
                                                     .currentUser!.email);
                                                 if (FirebaseAuth.instance
@@ -189,7 +188,9 @@ class _SigninScreenState extends State<SigninScreen>
                                                   Get.offAll(AdminPanel());
                                                 } else if (FirebaseAuth.instance
                                                     .currentUser!.displayName!
-                                                    .contains("admin")) {
+                                                    .contains("Admin")) {
+                                                  print("printing email");
+
                                                   FirebaseFirestore.instance
                                                       .collection("admin")
                                                       .doc(_auth
@@ -205,20 +206,12 @@ class _SigninScreenState extends State<SigninScreen>
                                                             "isAdmin"] ==
                                                         "false") {
                                                       loading.isLoading(false);
+                                                      print("isAdmin false");
 
                                                       Get.offAll(
                                                           IdVerification(true));
                                                     } else {
-                                                      if (auth.currentUser!
-                                                          .displayName!
-                                                          .contains("false")) {
-                                                        loading
-                                                            .isLoading(false);
-
-                                                        Get.offAll(() =>
-                                                            IdVerification(
-                                                                false));
-                                                      } else {
+                                                      {
                                                         loading
                                                             .isLoading(false);
 
@@ -227,17 +220,26 @@ class _SigninScreenState extends State<SigninScreen>
                                                       }
                                                     }
                                                   });
-                                                } else {
+                                                }
+                                                } catch (e) {
+                                                
+                                              }
+                                              print(FirebaseAuth.instance
+                                                    .currentUser!.displayName);
+                                                if (auth
+                                                    .currentUser!.displayName!
+                                                    .contains("false")) {
                                                   loading.isLoading(false);
 
+                                                  Get.offAll(() =>
+                                                      IdVerification(false));
+                                                } else {
+                                                  loading.isLoading(false);
+                                                  print(
+                                                      "im going to tenant from here");
                                                   Get.offAll(
                                                       () => TenantHome());
                                                 }
-                                              } catch (e) {
-                                                loading.isLoading(false);
-
-                                                Get.offAll(() => TenantHome());
-                                              }
                                             });
                                           }
                                         });

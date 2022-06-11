@@ -58,10 +58,10 @@ class WelcomeScreen extends StatelessWidget {
           SizedBox(
             height: 48,
           ),
-          Icon(
-            Icons.apartment,
-            color: Colors.white,
-            size: 230,
+          Image.asset(
+            "assets/images/jlan2.png",
+            width: 250,
+            height: 250,
           ),
           SizedBox(
             height: 24,
