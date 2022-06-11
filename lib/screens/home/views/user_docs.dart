@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:jlan/controllers/loading.dart';
 import 'package:jlan/controllers/tenant.dart';
 import 'package:jlan/models/docs.dart';
 import 'package:jlan/services/services.dart';
@@ -23,6 +24,7 @@ class UserDocs extends StatefulWidget {
 }
 
 class _UserDocsState extends State<UserDocs> {
+  final loading = Get.find<LoadingController>();
   @override
   void initState() {
     print(FirebaseAuth.instance.currentUser!.displayName);
@@ -33,107 +35,116 @@ class _UserDocsState extends State<UserDocs> {
   @override
   Widget build(BuildContext context) {
     final devSize = MediaQuery.of(context).size;
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          elevation: 0,
-          centerTitle: true,
-          backgroundColor: ColorsRes.primary,
-          
-          title: Text('JLan',
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ))),
-      body: Container(
-        width: devSize.width,
-        height: devSize.height,
-        // margin: const EdgeInsets.only(top: 60.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topLeft,
-            colors: [
-              Colors.black,
-              ColorsRes.primary,
-            ],
-          ),
-        ),
-        child: StreamBuilder<List<docs>>(
-            stream: Services().getUserDocs(widget.UID),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "No Docs yet",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                }
-                final docController = Get.find<DocController>();
-                return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      docController.doc.value = snapshot.data![index];
-                      return GestureDetector(
-                        onTap: () {
-                          print(index);
-                          downloadFile(snapshot.data![index].name,
-                              snapshot.data![index].docURL);
-                        },
-                        child: Container(
-                          height: 80,
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16)),
-                          alignment: Alignment.center,
-                          child: Row(
-                            children: [
-                              Icon(Icons.library_books, color: Colors.black),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      children: [
+        Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+              elevation: 0,
+              centerTitle: true,
+              backgroundColor: ColorsRes.primary,
+              title: Text('JLan',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ))),
+          body: Container(
+            width: devSize.width,
+            height: devSize.height,
+            // margin: const EdgeInsets.only(top: 60.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topLeft,
+                colors: [
+                  Colors.black,
+                  ColorsRes.primary,
+                ],
+              ),
+            ),
+            child: StreamBuilder<List<docs>>(
+                stream: Services().getUserDocs(widget.UID),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Text(
+                          "No Docs yet",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+                    final docController = Get.find<DocController>();
+                    return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          docController.doc.value = snapshot.data![index];
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                loading.isLoading.value = true;
+                              });
+                              print(index);
+                              downloadFile(snapshot.data![index].name,
+                                  snapshot.data![index].docURL);
+                            },
+                            child: Container(
+                              height: 80,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16)),
+                              alignment: Alignment.center,
+                              child: Row(
                                 children: [
-                                  Text(
-                                    '${docController.doc.value.name}',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
+                                  Icon(Icons.library_books,
+                                      color: Colors.black),
+                                  SizedBox(
+                                    width: 8,
                                   ),
-                                  Text(
-                                    docController.doc.value.docID!,
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${docController.doc.value.name}',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        docController.doc.value.docID!,
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      );
-                    });
-              } else {
-                return Center(child: LoadingWidget());
-              }
-            }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        child: Icon(Icons.add, color: Colors.black),
-        onPressed: () {
-          selectFile(context);
-        },
-      ),
+                            ),
+                          );
+                        });
+                  } else {
+                    return Center(child: LoadingWidget());
+                  }
+                }),
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.white,
+            child: Icon(Icons.add, color: Colors.black),
+            onPressed: () {
+              selectFile(context);
+            },
+          ),
+        ),
+        LoadingWidget()
+      ],
     );
   }
 
@@ -165,6 +176,9 @@ class _UserDocsState extends State<UserDocs> {
 
 //step 2 upload file
   Future uploadFile(File file) async {
+    setState(() {
+      loading.isLoading.value = true;
+    });
     String uid = widget.UID == null
         ? FirebaseAuth.instance.currentUser!.uid
         : widget.UID!;
@@ -221,10 +235,16 @@ class _UserDocsState extends State<UserDocs> {
       file
           .writeAsBytes(decodedBytes)
           .then((value) async => await OpenFile.open(file.path));
+      setState(() {
+        loading.isLoading.value = false;
+      });
     });
   }
 
   throwError(String a) {
+    setState(() {
+      loading.isLoading.value = false;
+    });
     Get.snackbar(
       "$a",
       "",

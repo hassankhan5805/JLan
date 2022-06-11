@@ -3,10 +3,7 @@ import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/signout.dart';
 import 'package:jlan/utils/widgets/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../../services/auth.dart';
 import '../../../utils/constant/color.dart';
-import '../../authentication/welcome.dart';
 
 class ListAdmin extends StatelessWidget {
   ListAdmin({Key? key}) : super(key: key);

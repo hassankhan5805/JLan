@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:jlan/controllers/loading.dart';
 import 'package:jlan/models/payments.dart';
 import 'package:jlan/screens/home/views/add_payment.dart';
 import 'package:jlan/services/services.dart';
@@ -15,148 +16,157 @@ import '../../../utils/constant/color.dart';
 class UserPayments extends StatelessWidget {
   final String? UID;
   UserPayments({Key? key, this.UID}) : super(key: key);
-  // final tenantController = Get.find<tenantController>();
+
+  final loading = Get.find<LoadingController>();
 
   @override
   Widget build(BuildContext context) {
     final devSize = MediaQuery.of(context).size;
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          elevation: 0,
-          centerTitle: true,
-          backgroundColor: ColorsRes.primary,
-          actions: [
-            SizedBox(
-              width: 8,
+    return Stack(
+      children: [
+        Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+              elevation: 0,
+              centerTitle: true,
+              backgroundColor: ColorsRes.primary,
+              actions: [
+                SizedBox(
+                  width: 8,
+                ),
+              ],
+              title: Text('JLan',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ))),
+          body: Container(
+            width: devSize.width,
+            height: devSize.height,
+            // margin: const EdgeInsets.only(top: 60.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topLeft,
+                colors: [
+                  Colors.black,
+                  ColorsRes.primary,
+                ],
+              ),
             ),
-          ],
-          title: Text('JLan',
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ))),
-      body: Container(
-        width: devSize.width,
-        height: devSize.height,
-        // margin: const EdgeInsets.only(top: 60.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topLeft,
-            colors: [
-              Colors.black,
-              ColorsRes.primary,
-            ],
-          ),
-        ),
-        child: StreamBuilder<List<payments>>(
-            stream: Services().getUserPayments(UID),
-            builder: (context, snapshot) {
-              print(snapshot.data);
-              if (snapshot.hasData) {
-                if (snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "No Payments yet",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                }
-                final List<payments>? data = snapshot.data;
-                print("inside builder");
-                return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          downloadFile(snapshot.data![index].payID,
-                              snapshot.data![index].photoURL);
-                        },
-                        child: Container(
-                          height: 100,
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16)),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Icon(Icons.payment, color: Colors.black),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Amount: ${data![index].amount}',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    'Date: ${data[index].date!.split(" ").first}',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    'Status: ${data[index].isApproved!.contains("true") ? "Approved" : "Pending"}',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Visibility(
-                                    visible: UID != null &&
-                                        data[index]
-                                            .isApproved!
-                                            .contains("false"),
-                                    child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(90, 30),
-                                          primary: ColorsRes.primary,
-                                          shape: new RoundedRectangleBorder(
-                                            borderRadius:
-                                                new BorderRadius.circular(30.0),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Services().updateInnerElement(
-                                              "tenants",
-                                              UID!,
-                                              "payments",
-                                              data[index].date!,
-                                              "isApproved",
-                                              "true");
-                                        },
-                                        child: Text("Approve")),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+            child: StreamBuilder<List<payments>>(
+                stream: Services().getUserPayments(UID),
+                builder: (context, snapshot) {
+                  print(snapshot.data);
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Text(
+                          "No Payments yet",
+                          style: TextStyle(color: Colors.white),
                         ),
                       );
-                    });
-              } else {
-                return Center(child: LoadingWidget());
-              }
-            }),
-      ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.white,
-          child: Icon(Icons.add, color: Colors.black),
-          onPressed: () {
-            Get.to(AddPayment(
-              UID: UID,
-            ));
-          }),
+                    }
+                    final List<payments>? data = snapshot.data;
+                    print("inside builder");
+                    return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              loading.isLoading.value = true;
+                              downloadFile(snapshot.data![index].payID,
+                                  snapshot.data![index].photoURL);
+                            },
+                            child: Container(
+                              height: 100,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16)),
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Icon(Icons.payment, color: Colors.black),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Amount: ${data![index].amount}',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        'Date: ${data[index].date!.split(" ").first}',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        'Status: ${data[index].isApproved!.contains("true") ? "Approved" : "Pending"}',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Visibility(
+                                        visible: UID != null &&
+                                            data[index]
+                                                .isApproved!
+                                                .contains("false"),
+                                        child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              minimumSize: Size(90, 30),
+                                              primary: ColorsRes.primary,
+                                              shape: new RoundedRectangleBorder(
+                                                borderRadius:
+                                                    new BorderRadius.circular(
+                                                        30.0),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              Services().updateInnerElement(
+                                                  "tenants",
+                                                  UID!,
+                                                  "payments",
+                                                  data[index].date!,
+                                                  "isApproved",
+                                                  "true");
+                                            },
+                                            child: Text("Approve")),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  } else {
+                    return Center(child: LoadingWidget());
+                  }
+                }),
+          ),
+          floatingActionButton: FloatingActionButton(
+              backgroundColor: Colors.white,
+              child: Icon(Icons.add, color: Colors.black),
+              onPressed: () {
+                Get.to(AddPayment(
+                  UID: UID,
+                ));
+              }),
+        ),
+        LoadingWidget(),
+      ],
     );
   }
 
@@ -185,10 +195,13 @@ class UserPayments extends StatelessWidget {
       file
           .writeAsBytes(decodedBytes)
           .then((value) async => await OpenFile.open(file.path));
+      loading.isLoading.value = false;
     });
   }
 
   throwError(String a) {
+    loading.isLoading.value = false;
+
     Get.snackbar(
       "$a",
       "",

@@ -4,8 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:jlan/controllers/loading.dart';
 import 'package:jlan/models/payments.dart';
 import 'package:jlan/utils/constant/color.dart';
+import 'package:jlan/utils/widgets/loading.dart';
 import '../../../services/services.dart';
 
 class AddPayment extends StatefulWidget {
@@ -21,111 +24,123 @@ class _AddPaymentState extends State<AddPayment> {
   TextEditingController amountController = TextEditingController();
   FilePickerResult? pickedFile;
   bool amountEntered = false;
+  final loading = Get.find<LoadingController>();
+
   String? fileName;
 
   @override
   Widget build(BuildContext context) {
     final devSize = MediaQuery.of(context).size;
-
-    return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-            elevation: 0,
-            centerTitle: true,
-            backgroundColor: ColorsRes.primary,
-            actions: [
-              // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.search)),
-              SizedBox(
-                width: 8,
-              ),
-            ],
-            title: Text('JLan Payments',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ))),
-        body: Container(
-          width: devSize.width,
-          height: devSize.height,
-          // margin: const EdgeInsets.only(top: 60.0),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topLeft,
-              colors: [
-                Colors.black,
-                ColorsRes.primary,
-              ],
-            ),
-          ),
-          child: Visibility(
-            visible: !amountEntered,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              height: devSize.height - 400,
+    return Stack(
+      children: [
+        Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+                elevation: 0,
+                centerTitle: true,
+                backgroundColor: ColorsRes.primary,
+                actions: [
+                  // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.search)),
+                  SizedBox(
+                    width: 8,
+                  ),
+                ],
+                title: Text('JLan Payments',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ))),
+            body: Container(
               width: devSize.width,
+              height: devSize.height,
+              // margin: const EdgeInsets.only(top: 60.0),
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 200,
-                  ),
-                  TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Amount',
-                    ),
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(90, 30),
-                        primary: ColorsRes.primary,
-                        shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topLeft,
+                  colors: [
+                    Colors.black,
+                    ColorsRes.primary,
+                  ],
+                ),
+              ),
+              child: Visibility(
+                visible: !amountEntered,
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  height: devSize.height - 400,
+                  width: devSize.width,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 200,
+                      ),
+                      TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Amount',
                         ),
                       ),
-                      onPressed: () {
-                        if (amountController.text.isNotEmpty &&
-                            amountController.text.isNum) {
-                          setState(() {
-                            amountEntered = true;
-                          });
-                        } else {
-                          throwError("Please enter a valid amount");
-                        }
-                      },
-                      child: Text("Upload File")),
-                ],
+                      SizedBox(
+                        height: 12,
+                      ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(90, 30),
+                            primary: ColorsRes.primary,
+                            shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(30.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (amountController.text.isNotEmpty &&
+                                amountController.text.isNum) {
+                              setState(() {
+                                amountEntered = true;
+                              });
+                            } else {
+                              throwError("Please enter a valid amount");
+                            }
+                          },
+                          child: Text("Upload File")),
+                    ],
+                  ),
+                ),
+                replacement: Padding(
+                  padding: const EdgeInsets.all(80),
+                  child: ListTile(
+                    tileColor: Colors.white,
+                    iconColor: Colors.white,
+                    textColor: Colors.white,
+                    title: Text("Choose File"),
+                    leading: Icon(Icons.photo_outlined),
+                    onTap: () async {
+                      pickedFile = await FilePicker.platform.pickFiles();
+                      fileName = pickedFile!.files.single.path!.split("/").last;
+                      if (pickedFile != null) {
+                        var file = File(pickedFile!.files.single.path!);
+                        uploadFile(file);
+                      }
+                    },
+                  ),
+                ),
               ),
-            ),
-            replacement: Padding(
-              padding: const EdgeInsets.only(top: 100.0),
-              child: ListTile(
-                title: Text("Choose File"),
-                leading: Icon(Icons.photo_outlined),
-                onTap: () async {
-                  pickedFile = await FilePicker.platform.pickFiles();
-                  fileName = pickedFile!.files.single.path!.split("/").last;
-                  if (pickedFile != null) {
-                    var file = File(pickedFile!.files.single.path!);
-                    uploadFile(file);
-                  }
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
-          ),
-        ));
+            )),
+        LoadingWidget(),
+      ],
+    );
   }
 
 //step 2 upload file
   Future uploadFile(File file) async {
+    setState(() {
+      loading.isLoading.value = true;
+    });
     String uid = widget.UID == null
         ? FirebaseAuth.instance.currentUser!.uid
         : widget.UID!;
@@ -149,6 +164,8 @@ class _AddPaymentState extends State<AddPayment> {
           Services()
               .setPayment(x, uid)
               .then((value) => throwError("File uploaded"));
+          loading.isLoading.value = false;
+          Navigator.of(context).pop();
         }, onError: (err) {
           throwError(err.toString());
         });
@@ -161,6 +178,9 @@ class _AddPaymentState extends State<AddPayment> {
   }
 
   throwError(String a) {
+    setState(() {
+      loading.isLoading.value = false;
+    });
     Get.snackbar(
       "$a",
       "",
