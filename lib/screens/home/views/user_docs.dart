@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jlan/controllers/loading.dart';
 import 'package:jlan/controllers/tenant.dart';
 import 'package:jlan/models/docs.dart';
@@ -150,23 +151,51 @@ class _UserDocsState extends State<UserDocs> {
   String? fileName;
   void selectFile(BuildContext context) {
     FilePickerResult? pickedFile;
+    final ImagePicker _picker = ImagePicker();
+
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: Text('Add Document'),
-            content: ListTile(
-              title: Text("Choose File"),
-              leading: Icon(Icons.photo_outlined),
-              onTap: () async {
-                pickedFile = await FilePicker.platform.pickFiles();
-                fileName = pickedFile!.files.single.path!.split("/").last;
-                if (pickedFile != null) {
-                  var file = File(pickedFile!.files.single.path!);
-                  uploadFile(file);
-                }
-                Navigator.of(context).pop();
-              },
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: Text("Choose File"),
+                  leading: Icon(Icons.photo_outlined),
+                  onTap: () async {
+                    pickedFile = await FilePicker.platform.pickFiles();
+                    fileName = pickedFile!.files.single.path!.split("/").last;
+                    if (pickedFile != null) {
+                      var file = File(pickedFile!.files.single.path!);
+                      uploadFile(file);
+                    }
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ListTile(
+                  title: Text("Open Camera"),
+                  leading: Icon(Icons.photo_outlined),
+                  onTap: () async {
+                    fileName = DateTime.now().day.toString() +
+                        DateTime.now().month.toString() +
+                        DateTime.now().year.toString() +
+                        ".jpg";
+                    final XFile? image = await _picker.pickImage(
+                      source: ImageSource.camera,
+                      maxHeight: 480,
+                      maxWidth: 640,
+                      imageQuality: 50,
+                    );
+                    setState(() {
+                      var file = File(image!.path);
+                      uploadFile(file);
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           );
         });

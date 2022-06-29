@@ -48,12 +48,23 @@ class Services {
     });
   }
 
-  Stream<List<apartment>>? getAllApartments() {
+  Stream<List<apartment>>? getAllApartments({bool filter = false}) {
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-    return _firestore.collection('apartments').snapshots().map((event) {
-      return event.docs.map((e) => apartment.fromJson(e.data())).toList();
-    });
+    if (filter) {
+      return _firestore
+          .collection('apartments')
+          .where("occupiedBy", isEqualTo: "null")
+          .snapshots()
+          .map((event) {
+        print(event.docs.map((e) => apartment.fromJson(e.data())).toList());
+        return event.docs.map((e) => apartment.fromJson(e.data())).toList();
+      });
+    } else {
+      return _firestore.collection('apartments').snapshots().map((event) {
+        return event.docs.map((e) => apartment.fromJson(e.data())).toList();
+      });
+    }
   }
 
   Stream<apartment>? getApartment(String id) {
@@ -178,14 +189,13 @@ class Services {
           updateElement(
               "apartments", id, "occupiedBy", _auth.currentUser!.uid, false);
           var x = tenants(
-            name: _auth.currentUser!.displayName!.split('--').first,
-            email: _auth.currentUser!.email,
-            id: _auth.currentUser!.uid,
-            apartmentID: id,
-            profileURL: "",
-            balance: value.docs.first["rent"],
-            registerOn: DateTime.now()
-          );
+              name: _auth.currentUser!.displayName!.split('--').first,
+              email: _auth.currentUser!.email,
+              id: _auth.currentUser!.uid,
+              apartmentID: id,
+              profileURL: "",
+              balance: value.docs.first["rent"],
+              registerOn: DateTime.now());
           setTenant(x);
 
           Get.snackbar("Congrats", "Registration Successful",
@@ -222,8 +232,7 @@ class Services {
       var years_elapsed = months_elapsed / 12;
       final balance =
           "${approvedPayments - int.parse((months_elapsed / int.parse(apart.period!)).toStringAsFixed(0)) * double.parse(apart.rent!)}";
-      Services()
-          .updateElement("tenants", id, "balance", balance, false);
+      Services().updateElement("tenants", id, "balance", balance, false);
     });
   }
   // Future<tenants> getUserProfileNoStream() async {

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jlan/models/admin.dart';
+import 'package:jlan/models/apartment.dart';
 import 'package:jlan/screens/home/home.dart';
 import 'package:jlan/services/services.dart';
 import 'package:jlan/utils/signout.dart';
@@ -153,62 +154,92 @@ class _IdVerificationState extends State<IdVerification>
                                   );
                                 }
                               }),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                SizedBox(),
-                                Text(
-                                  'apartment ID verification',
+                          child: ListView(
+                            children: [
+                              SizedBox(),
+                              Center(
+                                child: Text(
+                                  'Apartment ID Verification\nPlease select your Apartment ID',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.black.withOpacity(.7),
                                   ),
                                 ),
-                                SizedBox(),
-                                // component1(Icons.account_circle_outlined,
-                                //     'User name...', false, false,(value) {
-                                //   if (value.isEmpty) {
-                                //     return 'Please enter your email';
-                                //   }
-                                //   return null;
-                                // },emailController),
-                                component1(Icons.edit, 'ID...', false, false,
-                                    apartmentID),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    component2(
-                                      'Verify',
-                                      2.6,
-                                      () async {
-                                        FocusScope.of(context).unfocus();
-                                        if (apartmentID.text.isEmpty)
-                                          validator("Field is Required ");
-                                        else {
-                                          loading.isLoading(true);
-                                          FocusScope.of(context).unfocus();
-                                          Services()
-                                              .apartmentVerification(
-                                                  apartmentID.text)
-                                              .then((value) {
-                                            loading.isLoading(false);
-                                          });
+                              ),
+                              SizedBox(
+                                height: 100,
+                                width: double.infinity,
+                                child: StreamBuilder<List<apartment>>(
+                                    stream: Services()
+                                        .getAllApartments(filter: true),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        if (snapshot.data!.isEmpty) {
+                                          return Center(
+                                            child: Text(
+                                              "No tenant yet",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          );
                                         }
-                                      },
-                                    ),
-                                    SizedBox(),
-                                  ],
-                                ),
-
-                                SizedBox(),
-                              ],
-                            ),
+                                        final List<apartment>? data =
+                                            snapshot.data;
+                                        return ListView.builder(
+                                            itemCount:
+                                                snapshot.data!.length + 1,
+                                            itemBuilder: (context, index) {
+                                              if (index ==
+                                                  snapshot.data!.length) {
+                                                return SizedBox(
+                                                  height: 10,
+                                                );
+                                              } else
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    loading.isLoading(true);
+                                                    FocusScope.of(context)
+                                                        .unfocus();
+                                                    Services()
+                                                        .apartmentVerification(
+                                                            data![index]
+                                                                .id
+                                                                .toString())
+                                                        .then((value) {
+                                                      loading.isLoading(false);
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16)),
+                                                    alignment: Alignment.center,
+                                                    child: Text(
+                                                      data![index]
+                                                          .id
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.black
+                                                            .withOpacity(.7),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                            });
+                                      } else {
+                                        return Center(child: LoadingWidget());
+                                      }
+                                    }),
+                              ),
+                            ],
                           ),
                         ),
                       ),
