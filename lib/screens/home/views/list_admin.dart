@@ -58,69 +58,77 @@ class ListAdmin extends StatelessWidget {
                 }
                 final List<admin>? data = snapshot.data;
                 return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: snapshot.data!.length + 1,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          // Get.to(() =>
-                        },
-                        child: Container(
+                      if (index == snapshot.data!.length) {
+                        return SizedBox(
                           height: 100,
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16)),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Icon(
-                                Icons.admin_panel_settings,
-                                size: 50,
-                              ),
-                              Text(
-                                '${data![index].name}',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500),
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    'Status: ${data[index].isAdmin!.contains("true") ? "Approved" : "Pending"}',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        data[index].isAdmin!.contains("false"),
-                                    child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          minimumSize: Size(90, 30),
-                                          primary: ColorsRes.primary,
-                                          shape: new RoundedRectangleBorder(
-                                            borderRadius:
-                                                new BorderRadius.circular(30.0),
+                        );
+                      } else
+                        return GestureDetector(
+                          onTap: () {
+                            // Get.to(() =>
+                          },
+                          child: Container(
+                            height: 100,
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16)),
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Icon(
+                                  Icons.admin_panel_settings,
+                                  size: 50,
+                                ),
+                                Text(
+                                  '${data![index].name}',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Status: ${data[index].isAdmin!.contains("true") ? "Approved" : "Pending"}',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Visibility(
+                                      visible: data[index]
+                                          .isAdmin!
+                                          .contains("false"),
+                                      child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            minimumSize: Size(90, 30),
+                                            primary: ColorsRes.primary,
+                                            shape: new RoundedRectangleBorder(
+                                              borderRadius:
+                                                  new BorderRadius.circular(
+                                                      30.0),
+                                            ),
                                           ),
-                                        ),
-                                        onPressed: () {
-                                          Services().updateElement(
-                                              "admin",
-                                              data[index].id!,
-                                              "isAdmin",
-                                              "true",
-                                              false);
-                                        },
-                                        child: Text("Approve")),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                          onPressed: () {
+                                            Services().updateElement(
+                                                "admin",
+                                                data[index].id!,
+                                                "isAdmin",
+                                                "true",
+                                                false);
+                                          },
+                                          child: Text("Approve")),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
+                        );
                     });
               } else {
                 return Center(child: LoadingWidget());

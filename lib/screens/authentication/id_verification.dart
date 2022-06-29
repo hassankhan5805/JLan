@@ -72,9 +72,7 @@ class _IdVerificationState extends State<IdVerification>
               elevation: 0,
               centerTitle: true,
               backgroundColor: ColorsRes.primary,
-              actions: [
-                SignOut()
-              ],
+              actions: [SignOut()],
               title: Text('JLan',
                   style: TextStyle(
                     fontSize: 26,
@@ -123,7 +121,8 @@ class _IdVerificationState extends State<IdVerification>
                                 if (snapshot.hasData) {
                                   if (snapshot.data!.isAdmin!
                                       .contains("true")) {
-                                    Get.offAll(AdminPanel());
+                                    Future.delayed(Duration(seconds: 2),
+                                        () => Get.offAll(AdminPanel()));
                                   }
                                   return Column(
                                     mainAxisAlignment: MainAxisAlignment.center,

@@ -132,6 +132,8 @@ class UserPayments extends StatelessWidget {
                                               ),
                                             ),
                                             onPressed: () {
+                                              Services().updatePayments(UID!);
+
                                               Services().updateInnerElement(
                                                   "tenants",
                                                   UID!,

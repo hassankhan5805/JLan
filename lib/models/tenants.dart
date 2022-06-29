@@ -5,6 +5,7 @@ class tenants {
   String? name;
   String? id;
   String? email;
+  DateTime? registerOn;
 
   tenants(
       {this.profileURL,
@@ -12,6 +13,7 @@ class tenants {
       this.balance,
       this.name,
       this.id,
+      this.registerOn,
       this.email});
 
   tenants.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class tenants {
     balance = json['balance'];
     name = json['name'];
     id = json['id'];
+    registerOn = json['registerOn'].toDate() ?? DateTime.now();
     email = json['email'];
   }
 
@@ -29,6 +32,7 @@ class tenants {
     data['apartmentID'] = this.apartmentID;
     data['balance'] = this.balance;
     data['name'] = this.name;
+    data['registerOn'] = this.registerOn;
     data['id'] = this.id;
     data['email'] = this.email;
     return data;

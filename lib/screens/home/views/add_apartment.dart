@@ -138,7 +138,8 @@ class _AddApartmentState extends State<AddApartment>
                                   false,
                                   incremental),
                               component1(Icons.arrow_upward, 'Period (months)',
-                                  false, false, period),
+                                  false, false, period,
+                                  textInputType: TextInputType.number),
                               component2(
                                 'Add',
                                 2.6,
@@ -147,9 +148,13 @@ class _AddApartmentState extends State<AddApartment>
                                   if (rent.text.isEmpty ||
                                       id.text.isEmpty ||
                                       incremental.text.isEmpty ||
-                                      period.text.isEmpty)
+                                      period.text.isEmpty) {
                                     validator("All Fields Are Required ");
-                                  else {
+                                  } else if (!period.text.isNum ||
+                                      int.parse(period.text) > 18 ||
+                                      int.parse(period.text) < 1) {
+                                    validator("Provide valid period");
+                                  } else {
                                     loading.isLoading(true);
                                     FocusScope.of(context).unfocus();
                                     var x = apartment(
@@ -202,7 +207,8 @@ class _AddApartmentState extends State<AddApartment>
   }
 
   Widget component1(IconData icon, String hintText, bool isPassword,
-      bool isEmail, TextEditingController? controller) {
+      bool isEmail, TextEditingController? controller,
+      {TextInputType? textInputType}) {
     Size size = MediaQuery.of(context).size;
     return Container(
       height: size.width / 8,
@@ -217,7 +223,9 @@ class _AddApartmentState extends State<AddApartment>
         controller: controller,
         style: TextStyle(color: Colors.black.withOpacity(.8)),
         obscureText: isPassword,
-        keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
+        keyboardType: isEmail
+            ? TextInputType.emailAddress
+            : textInputType ?? TextInputType.text,
         decoration: InputDecoration(
           prefixIcon: Icon(
             icon,

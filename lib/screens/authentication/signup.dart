@@ -159,7 +159,9 @@ class _SignupScreenState extends State<SignupScreen>
                                   else {
                                     loading.isLoading(true);
                                     FocusScope.of(context).unfocus();
-
+                                    print(widget.isAdmin!
+                                        ? "${_nameController.text}--Admin"
+                                        : "${_nameController.text}--false");
                                     createAccount(
                                       widget.isAdmin!
                                           ? "${_nameController.text}--Admin"

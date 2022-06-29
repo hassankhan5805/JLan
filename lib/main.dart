@@ -16,40 +16,16 @@ import 'package:jlan/controllers/tenant.dart';
 import 'firebase_options.dart';
 import 'utils/constant/color.dart';
 
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-// }
-
-// const AndroidNotificationChannel channel = AndroidNotificationChannel(
-//     'high_importance_channel', // id
-//     'High Importance Notifications', // title
-//     importance: Importance.high,
-//     playSound: true);
-
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //         AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
 
-  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // );
   Get.put(LoadingController());
   Get.put(TenantController());
   Get.put(ApartmentController());
   Get.put(DocController());
-  // Notifications().initNotifications();
 
   runApp(const JlanApp());
 }
@@ -99,42 +75,24 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    // signOut();
     _getStoragePermission();
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   RemoteNotification? notification = message.notification;
-    //   AndroidNotification? android = message.notification?.android;
-    //   if (notification != null && android != null) {
-    //     flutterLocalNotificationsPlugin.show(
-    //         notification.hashCode,
-    //         notification.title,
-    //         notification.body,
-    //         NotificationDetails(
-    //           android: AndroidNotificationDetails(
-    //             channel.id,
-    //             channel.name,
-    //             icon: '@mipmap/ic_launcher',
-    //           ),
-    //         ));
-    //   }
-    // });
-
-    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    //   RemoteNotification? notification = message.notification;
-    //   AndroidNotification? android = message.notification?.android;
-    //   if (notification != null && android != null) {
-    //     // Get.offAll(() => RequestCollab());
-    //   }
-    // });
     Timer(const Duration(seconds: 3), () {
       if (_auth.currentUser != null) {
+        // try {
+        //   if ("{_auth.currentUser!.displayName}" == "null") {
+        //     Get.offAll(WelcomeScreen());
+        //   }
+        // } catch (e) {
+        //   Get.offAll(WelcomeScreen());
+        // }
         FirebaseAuth.instance.currentUser!.reload().then((value) {
-          //owner
           if (_auth.currentUser!.email == "admin@admin.com") {
             Get.offAll(AdminPanel());
-          } else if (_auth.currentUser!.displayName!.contains("false")) {
+          } else if ("${_auth.currentUser!.displayName}" != "null" &&
+              _auth.currentUser!.displayName!.contains("false")) {
             Get.offAll(IdVerification(false));
-          } else if (_auth.currentUser!.displayName!.contains("admin")) {
+          } else if ("${_auth.currentUser!.displayName}" != "null" &&
+              _auth.currentUser!.displayName!.contains("admin")) {
             FirebaseFirestore.instance
                 .collection("admin")
                 .doc(_auth.currentUser!.uid)
@@ -150,8 +108,12 @@ class SplashScreenState extends State<SplashScreen> {
                 Get.to(WelcomeScreen());
               }
             });
-          } else {
+          } else if ("${_auth.currentUser!.displayName}" != "null" &&
+              !_auth.currentUser!.displayName!.contains("false")) {
             Get.offAll(TenantHome());
+          } else {
+            signOut();
+            Get.to(WelcomeScreen());
           }
         });
       } else {

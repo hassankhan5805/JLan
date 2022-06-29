@@ -21,7 +21,7 @@ class ListTenants extends StatelessWidget {
           centerTitle: true,
           backgroundColor: ColorsRes.primary,
           actions: [
-           SignOut(),
+            SignOut(),
             SizedBox(
               width: 8,
             ),
@@ -60,52 +60,66 @@ class ListTenants extends StatelessWidget {
                 }
                 final List<tenants>? data = snapshot.data;
                 return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: snapshot.data!.length + 1,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Get.to(TenantHome(UID: data![index].id));
-                        },
-                        child: Container(
-                          height: 80,
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16)),
-                          alignment: Alignment.center,
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 8,
-                              ),
-                              CircleAvatar(
-                                backgroundColor: Colors.transparent,
-                                radius: 30,
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.black,
+                      if (index == snapshot.data!.length) {
+                        return SizedBox(
+                          height: 100,
+                        );
+                      } else
+                        return GestureDetector(
+                          onTap: () {
+                            Get.to(TenantHome(UID: data![index].id));
+                          },
+                          child: Container(
+                            height: 80,
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16)),
+                            alignment: Alignment.center,
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 8,
                                 ),
-                              ),
-                              Text(
-                                '${data![index].name}',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500),
-                              ),
-                              Spacer(),
-                              Text(
-                                'Balance : \$${data[index].balance}',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w500),
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                            ],
+                                CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  radius: 30,
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Container(
+                                  width: 100,
+                                  child: Text(
+                                    '${data![index].name}',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                                Spacer(),
+                                Container(
+                                  width: 100,
+                                  child: Text(
+                                    'Balance : \$${data[index].balance}',
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
+                        );
                     });
               } else {
                 return Center(child: LoadingWidget());

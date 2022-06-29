@@ -1,8 +1,7 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jlan/models/apartment.dart';
+import 'package:jlan/models/payments.dart';
 import 'package:jlan/models/tenants.dart';
 import 'package:jlan/screens/home/views/user_docs.dart';
 import 'package:jlan/screens/home/views/user_payments.dart';
@@ -41,8 +40,10 @@ class _TenantHomeState extends State<TenantHome> {
     if (tenantController.imageFile != null) {
       _imageFile = tenantController.imageFile;
     }
+    Services().updatePayments(uid!);
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +84,7 @@ class _TenantHomeState extends State<TenantHome> {
                                 fontWeight: FontWeight.w600),
                           ),
                           Text(
-                            '-\$${tenantController.tenant.value.balance}',
+                            '\$${tenantController.tenant.value.balance}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,

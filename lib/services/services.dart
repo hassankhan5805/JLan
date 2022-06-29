@@ -89,6 +89,19 @@ class Services {
     });
   }
 
+  getApprovedPayments(String? id) {
+    FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    return _firestore
+        .collection('tenants')
+        .doc(id != null ? id : _auth.currentUser!.uid)
+        .collection("payments")
+        .where("isApproved", isEqualTo: "true")
+        .get()
+        .then((value) {
+      return value.docs.map((e) => payments.fromJson(e.data())).toList();
+    });
+  }
+
   Future<void> setTenant(tenants user) async {
     await _firestore
         .collection('tenants')
@@ -171,6 +184,7 @@ class Services {
             apartmentID: id,
             profileURL: "",
             balance: value.docs.first["rent"],
+            registerOn: DateTime.now()
           );
           setTenant(x);
 
@@ -188,6 +202,30 @@ class Services {
     });
   }
 
+  updatePayments(String id) {
+    int approvedPayments = 0;
+    Services().getApprovedPayments(id).then((List<payments?> e) async {
+      try {
+        for (int i = 0; i < e.length; i++) {
+          approvedPayments += int.parse(e[i]!.amount!);
+        }
+        print(approvedPayments);
+      } catch (e) {
+        if (e.toString().contains("no element")) {
+          print("no approved payments");
+        }
+      }
+      tenants ten = await Services().getUserProfile(id).first;
+      var months_elapsed =
+          DateTime.now().difference(ten.registerOn!).inDays / 30;
+      apartment apart = await Services().getApartment(ten.apartmentID!)!.first;
+      var years_elapsed = months_elapsed / 12;
+      final balance =
+          "${approvedPayments - int.parse((months_elapsed / int.parse(apart.period!)).toStringAsFixed(0)) * double.parse(apart.rent!)}";
+      Services()
+          .updateElement("tenants", id, "balance", balance, false);
+    });
+  }
   // Future<tenants> getUserProfileNoStream() async {
   //   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   //   FirebaseAuth _auth = FirebaseAuth.instance;
