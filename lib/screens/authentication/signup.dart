@@ -170,7 +170,6 @@ class _SignupScreenState extends State<SignupScreen>
                                       if (value != null) {
                                         HapticFeedback.lightImpact();
                                         if (widget.isAdmin!) {
-                                          print("writing admin");
                                           var x = admin(
                                               name: _nameController.text,
                                               email: _emailController.text,

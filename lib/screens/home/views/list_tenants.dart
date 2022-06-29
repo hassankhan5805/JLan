@@ -51,8 +51,6 @@ class ListTenants extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data!.isEmpty) {
-                  print(snapshot.data);
-
                   return Center(
                     child: Text(
                       "No tenant yet",
@@ -67,7 +65,6 @@ class ListTenants extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           Get.to(TenantHome(UID: data![index].id));
-                          print(data[index].id);
                         },
                         child: Container(
                           height: 80,

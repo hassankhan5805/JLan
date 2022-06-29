@@ -100,8 +100,7 @@ class Services {
     await _firestore
         .collection('admin')
         .doc(_auth.currentUser!.uid)
-        .set(user.toJson())
-        .then((value) => print("writng complete"));
+        .set(user.toJson());
   }
 
   Future<void> setApartment(apartment user) async {

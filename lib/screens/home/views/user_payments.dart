@@ -58,7 +58,6 @@ class UserPayments extends StatelessWidget {
             child: StreamBuilder<List<payments>>(
                 stream: Services().getUserPayments(UID),
                 builder: (context, snapshot) {
-                  print(snapshot.data);
                   if (snapshot.hasData) {
                     if (snapshot.data!.isEmpty) {
                       return Center(
@@ -69,7 +68,6 @@ class UserPayments extends StatelessWidget {
                       );
                     }
                     final List<payments>? data = snapshot.data;
-                    print("inside builder");
                     return ListView.builder(
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
@@ -141,6 +139,12 @@ class UserPayments extends StatelessWidget {
                                                   data[index].date!,
                                                   "isApproved",
                                                   "true");
+                                              Services().updateElement(
+                                                  "tenants",
+                                                  UID!,
+                                                  "balance",
+                                                  data[index].amount,
+                                                  false);
                                             },
                                             child: Text("Approve")),
                                       ),
@@ -178,7 +182,7 @@ class UserPayments extends StatelessWidget {
       var response = await request.close();
       if (response.statusCode == 200) {
         var bytes = await consolidateHttpClientResponseBytes(response);
-        print(bytes.toString());
+        // print(bytes.toString());
         openFile(bytes, fileName!);
       } else {
         throwError("Error Occured");

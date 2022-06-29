@@ -27,7 +27,6 @@ class _UserDocsState extends State<UserDocs> {
   final loading = Get.find<LoadingController>();
   @override
   void initState() {
-    print(FirebaseAuth.instance.currentUser!.displayName);
     super.initState();
   }
 
@@ -85,7 +84,6 @@ class _UserDocsState extends State<UserDocs> {
                               setState(() {
                                 loading.isLoading.value = true;
                               });
-                              print(index);
                               downloadFile(snapshot.data![index].name,
                                   snapshot.data![index].docURL);
                             },
@@ -218,7 +216,6 @@ class _UserDocsState extends State<UserDocs> {
       var response = await request.close();
       if (response.statusCode == 200) {
         var bytes = await consolidateHttpClientResponseBytes(response);
-        print(bytes.toString());
         openFile(bytes, fileName!);
       } else {
         throwError("Error Occured");

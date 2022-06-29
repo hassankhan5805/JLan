@@ -178,8 +178,7 @@ class _SigninScreenState extends State<SigninScreen>
                                                 .reload()
                                                 .then((value) {
                                               try {
-                                                print(FirebaseAuth.instance
-                                                    .currentUser!.email);
+                                           
                                                 if (FirebaseAuth.instance
                                                         .currentUser!.email ==
                                                     "admin@admin.com") {
@@ -189,7 +188,6 @@ class _SigninScreenState extends State<SigninScreen>
                                                 } else if (FirebaseAuth.instance
                                                     .currentUser!.displayName!
                                                     .contains("Admin")) {
-                                                  print("printing email");
 
                                                   FirebaseFirestore.instance
                                                       .collection("admin")
@@ -206,7 +204,6 @@ class _SigninScreenState extends State<SigninScreen>
                                                             "isAdmin"] ==
                                                         "false") {
                                                       loading.isLoading(false);
-                                                      print("isAdmin false");
 
                                                       Get.offAll(
                                                           IdVerification(true));
@@ -224,8 +221,7 @@ class _SigninScreenState extends State<SigninScreen>
                                                 } catch (e) {
                                                 
                                               }
-                                              print(FirebaseAuth.instance
-                                                    .currentUser!.displayName);
+                        
                                                 if (auth
                                                     .currentUser!.displayName!
                                                     .contains("false")) {
@@ -235,8 +231,7 @@ class _SigninScreenState extends State<SigninScreen>
                                                       IdVerification(false));
                                                 } else {
                                                   loading.isLoading(false);
-                                                  print(
-                                                      "im going to tenant from here");
+                                              
                                                   Get.offAll(
                                                       () => TenantHome());
                                                 }

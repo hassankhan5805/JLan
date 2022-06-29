@@ -47,6 +47,8 @@ dependencies:
   open_file: ^3.2.1
   path_provider: ^2.0.11
   permission_handler: ^9.2.0
+  flutter_email_sender: ^5.1.0
+  mailer: ^5.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
