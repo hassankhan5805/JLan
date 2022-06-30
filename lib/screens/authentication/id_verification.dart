@@ -179,7 +179,7 @@ class _IdVerificationState extends State<IdVerification>
                                         if (snapshot.data!.isEmpty) {
                                           return Center(
                                             child: Text(
-                                              "No tenant yet",
+                                              "No apartment yet",
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),

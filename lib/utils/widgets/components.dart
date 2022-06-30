@@ -6,8 +6,8 @@ Widget component1(
     String hintText, TextEditingController? controller, BuildContext context) {
   Size size = MediaQuery.of(context).size;
   return Container(
-    height: size.width / 8,
-    width: size.width / 1.22,
+    height: size.height * 0.33,
+    width: size.width * 0.4,
     alignment: Alignment.center,
     padding: EdgeInsets.only(right: size.width / 30),
     decoration: BoxDecoration(
@@ -15,6 +15,7 @@ Widget component1(
       borderRadius: BorderRadius.circular(10),
     ),
     child: TextFormField(
+      maxLines: 8,
       controller: controller,
       style: TextStyle(color: Colors.black.withOpacity(.8)),
       decoration: InputDecoration(

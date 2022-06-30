@@ -5,6 +5,7 @@ class tenants {
   String? name;
   String? id;
   String? email;
+  String? notes;
   DateTime? registerOn;
 
   tenants(
@@ -13,6 +14,7 @@ class tenants {
       this.balance,
       this.name,
       this.id,
+      this.notes,
       this.registerOn,
       this.email});
 
@@ -22,6 +24,7 @@ class tenants {
     balance = json['balance'];
     name = json['name'];
     id = json['id'];
+    notes = json['notes'];
     registerOn = json['registerOn'].toDate() ?? DateTime.now();
     email = json['email'];
   }
@@ -34,6 +37,7 @@ class tenants {
     data['name'] = this.name;
     data['registerOn'] = this.registerOn;
     data['id'] = this.id;
+    data['notes'] = this.notes;
     data['email'] = this.email;
     return data;
   }

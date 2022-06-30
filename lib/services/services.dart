@@ -195,7 +195,8 @@ class Services {
               apartmentID: id,
               profileURL: "",
               balance: value.docs.first["rent"],
-              registerOn: DateTime.now());
+              registerOn: DateTime.now(),
+              notes: "");
           setTenant(x);
 
           Get.snackbar("Congrats", "Registration Successful",

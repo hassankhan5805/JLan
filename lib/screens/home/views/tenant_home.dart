@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jlan/utils/signout.dart';
+import 'package:jlan/utils/widgets/components.dart';
 import '../../../controllers/tenant.dart';
 import '../../../utils/constant/color.dart';
 
@@ -26,10 +27,8 @@ class TenantHome extends StatefulWidget {
 
 class _TenantHomeState extends State<TenantHome> {
   File? _imageFile;
-  bool isFaceID = false;
-  // FirebaseAuth _auth = FirebaseAuth.instance;
   final tenantController = Get.find<TenantController>();
-  // late String? userImage;
+  TextEditingController? notesController = TextEditingController();
   String? uid;
   @override
   void initState() {
@@ -44,249 +43,316 @@ class _TenantHomeState extends State<TenantHome> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final devSize = MediaQuery.of(context).size;
-    return Scaffold(
-      body: Container(
-        width: devSize.width,
-        height: devSize.height,
-        padding:
-            const EdgeInsets.only(top: 30.0, bottom: 40, left: 16, right: 16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topLeft,
-            colors: [
-              Colors.black,
-              ColorsRes.primary,
-            ],
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          width: devSize.width,
+          height: devSize.height,
+          padding:
+              const EdgeInsets.only(top: 30.0, bottom: 40, left: 16, right: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topLeft,
+              colors: [
+                Colors.black,
+                ColorsRes.primary,
+              ],
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.zero,
+            child: StreamBuilder<tenants>(
+                stream: Services().getUserProfile(uid),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    tenantController.tenant.value = snapshot.data!;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Balance:              \$${tenantController.tenant.value.balance}\n' +
+                                  'Next Due Date:   20-2-2022',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            Spacer(),
+                            SignOut(),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Center(
+                          child: Stack(fit: StackFit.loose, children: <Widget>[
+                            CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 56,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  radius: 52,
+                                  backgroundImage: _imageFile != null
+                                      ? FileImage(File(_imageFile!.path))
+                                      : tenantController.tenant.value
+                                                      .profileURL !=
+                                                  null &&
+                                              !tenantController.tenant.value
+                                                  .profileURL!.isEmpty
+                                          ? NetworkImage(tenantController
+                                              .tenant
+                                              .value
+                                              .profileURL!) as ImageProvider
+                                          : AssetImage(
+                                              'assets/images/user.png'),
+                                )),
+                            Positioned(
+                              right: 4,
+                              bottom: 2,
+                              child: InkWell(
+                                onTap: () => _selectImage(context),
+                                customBorder: CircleBorder(),
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  radius: 16.0,
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 22,
+                                    color: ColorsRes.primary,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ]),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Center(
+                          child: Text(
+                            "${tenantController.tenant.value.name}",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 14,
+                        ),
+                        Center(
+                          child: Text(
+                            '${tenantController.tenant.value.email}',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 14,
+                        ),
+                        Container(
+                            width: devSize.width,
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Column(
+                              children: [
+                                tile(
+                                  title: 'apartment ID',
+                                  body:
+                                      '${tenantController.tenant.value.apartmentID}',
+                                  onTap: () {},
+                                  leading: Icon(
+                                    CupertinoIcons.building_2_fill,
+                                    color: ColorsRes.primary,
+                                    size: 26,
+                                  ),
+                                ),
+                                StreamBuilder<apartment>(
+                                    stream: Services().getApartment(
+                                        tenantController
+                                            .tenant.value.apartmentID!),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        final apart =
+                                            Get.find<ApartmentController>();
+                                        apart.apart.value = snapshot.data!;
+                                        return Column(
+                                          children: [
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            tile(
+                                              title: 'Rent',
+                                              body: '${apart.apart.value.rent}',
+                                              onTap: () {},
+                                              leading: Icon(
+                                                CupertinoIcons.money_dollar,
+                                                color: ColorsRes.primary,
+                                                size: 26,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            tile(
+                                              title: 'Incremental',
+                                              body:
+                                                  '${apart.apart.value.incremental}% / Year',
+                                              onTap: () {},
+                                              leading: Icon(
+                                                Icons.arrow_upward,
+                                                color: ColorsRes.primary,
+                                                size: 26,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            tile(
+                                              title: 'Billing Period',
+                                              body:
+                                                  '${apart.apart.value.period} Months',
+                                              onTap: () {},
+                                              leading: Icon(
+                                                Icons.payment,
+                                                color: ColorsRes.primary,
+                                                size: 26,
+                                              ),
+                                            ),
+                                            tile(
+                                              title: 'Notes',
+                                              body:
+                                                  '${tenantController.tenant.value.notes}',
+                                              onTap: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return showDialogue(
+                                                        context,
+                                                        "Notes",
+                                                        "Notes",
+                                                        tenantController.tenant
+                                                            .value.notes);
+                                                  },
+                                                );
+                                              },
+                                              leading: Icon(
+                                                Icons.notes_sharp,
+                                                color: ColorsRes.primary,
+                                                size: 26,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      } else {
+                                        return Center(child: Text("No Data"));
+                                      }
+                                    }),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          minimumSize: Size(120, 50),
+                                          primary: ColorsRes.primary,
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(30.0),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Get.to(UserDocs(
+                                            UID: widget.UID,
+                                          ));
+                                        },
+                                        child: Text("Docs")),
+                                    // Spacer(),
+                                    ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          minimumSize: Size(120, 50),
+                                          primary: ColorsRes.primary,
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(30.0),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Get.to(UserPayments(
+                                            UID: widget.UID,
+                                          ));
+                                        },
+                                        child: Text("Payments")),
+                                  ],
+                                )
+                              ],
+                            )),
+                      ],
+                    );
+                  } else
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                }),
           ),
         ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.zero,
-          child: StreamBuilder<tenants>(
-              stream: Services().getUserProfile(uid),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  tenantController.tenant.value = snapshot.data!;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Balance: ',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            '\$${tenantController.tenant.value.balance}',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Spacer(),
-                          SignOut(),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Center(
-                        child: Stack(fit: StackFit.loose, children: <Widget>[
-                          CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 56,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.transparent,
-                                radius: 52,
-                                backgroundImage: _imageFile != null
-                                    ? FileImage(File(_imageFile!.path))
-                                    : tenantController
-                                                    .tenant.value.profileURL !=
-                                                null &&
-                                            !tenantController.tenant.value
-                                                .profileURL!.isEmpty
-                                        ? NetworkImage(tenantController.tenant
-                                            .value.profileURL!) as ImageProvider
-                                        : AssetImage('assets/images/user.png'),
-                              )),
-                          Positioned(
-                            right: 4,
-                            bottom: 2,
-                            child: InkWell(
-                              onTap: () => _selectImage(context),
-                              customBorder: CircleBorder(),
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 16.0,
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 22,
-                                  color: ColorsRes.primary,
-                                ),
-                              ),
-                            ),
-                          )
-                        ]),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Center(
-                        child: Text(
-                          "${tenantController.tenant.value.name}",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      Center(
-                        child: Text(
-                          '${tenantController.tenant.value.email}',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 14,
-                      ),
-                      Container(
-                          width: devSize.width,
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Column(
-                            children: [
-                              tile(
-                                title: 'apartment ID',
-                                body:
-                                    '${tenantController.tenant.value.apartmentID}',
-                                onTap: () {},
-                                leading: Icon(
-                                  CupertinoIcons.building_2_fill,
-                                  color: ColorsRes.primary,
-                                  size: 26,
-                                ),
-                              ),
-                              StreamBuilder<apartment>(
-                                  stream: Services().getApartment(
-                                      tenantController
-                                          .tenant.value.apartmentID!),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      final apart =
-                                          Get.find<ApartmentController>();
-                                      apart.apart.value = snapshot.data!;
-                                      return Column(
-                                        children: [
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          tile(
-                                            title: 'Rent',
-                                            body: '${apart.apart.value.rent}',
-                                            onTap: () {},
-                                            leading: Icon(
-                                              CupertinoIcons.money_dollar,
-                                              color: ColorsRes.primary,
-                                              size: 26,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          tile(
-                                            title: 'Incremental',
-                                            body:
-                                                '${apart.apart.value.incremental}% / Year',
-                                            onTap: () {},
-                                            leading: Icon(
-                                              Icons.arrow_upward,
-                                              color: ColorsRes.primary,
-                                              size: 26,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          tile(
-                                            title: 'Billing Period',
-                                            body:
-                                                '${apart.apart.value.period} Months',
-                                            onTap: () {},
-                                            leading: Icon(
-                                              Icons.payment,
-                                              color: ColorsRes.primary,
-                                              size: 26,
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    } else {
-                                      return Center(child: Text("No Data"));
-                                    }
-                                  }),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        minimumSize: Size(120, 50),
-                                        primary: ColorsRes.primary,
-                                        shape: new RoundedRectangleBorder(
-                                          borderRadius:
-                                              new BorderRadius.circular(30.0),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Get.to(UserDocs(
-                                          UID: widget.UID,
-                                        ));
-                                      },
-                                      child: Text("Docs")),
-                                  // Spacer(),
-                                  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        minimumSize: Size(120, 50),
-                                        primary: ColorsRes.primary,
-                                        shape: new RoundedRectangleBorder(
-                                          borderRadius:
-                                              new BorderRadius.circular(30.0),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Get.to(UserPayments(
-                                          UID: widget.UID,
-                                        ));
-                                      },
-                                      child: Text("Payments")),
-                                ],
-                              )
-                            ],
-                          )),
-                    ],
-                  );
-                } else
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-              }),
-        ),
       ),
+    );
+  }
+
+  showDialogue(
+      BuildContext context, String hintText, String key, String? initialText) {
+    TextEditingController _controller = TextEditingController();
+    _controller.text = "${initialText ?? ""}";
+    var size = MediaQuery.of(context).size;
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+          height: size.height * .5,
+          width: size.width * 0.4,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 1,
+                ),
+                Container(
+                    width: size.width * 0.6,
+                    child: component1(hintText, _controller, context)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    component2("Cancel", 30, () {
+                      Navigator.pop(context);
+                    }, context),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    component2("Update", 10, () {
+                      Services().updateElement("tenants", widget.UID ?? "",
+                          "notes", _controller.text, widget.UID == null);
+                      Navigator.pop(context);
+                      setState(() {});
+                    }, context)
+                  ],
+                )
+              ])),
     );
   }
 
