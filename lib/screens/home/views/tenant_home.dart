@@ -75,6 +75,17 @@ class _TenantHomeState extends State<TenantHome> {
                       children: [
                         Row(
                           children: [
+                            Visibility(
+                              visible: widget.UID != null,
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                icon: Icon(Icons.arrow_back,
+                                    color: Colors.white, size: 22),
+                              ),
+                            ),
+                            SizedBox(width: 10),
                             Text(
                               'Balance:              \$${tenantController.tenant.value.balance}\n' +
                                   'Next Due Date:   20-2-2022',
