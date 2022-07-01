@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jlan/models/tenants.dart';
 import 'package:jlan/screens/home/views/list_admin.dart';
 import 'package:jlan/screens/home/views/list_apartment.dart';
 import 'package:jlan/screens/home/views/list_tenants.dart';
-import 'package:jlan/services/services.dart';
 
 import '../../utils/constant/color.dart';
 

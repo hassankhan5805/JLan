@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jlan/models/apartment.dart';
-import 'package:jlan/models/payments.dart';
 import 'package:jlan/models/tenants.dart';
 import 'package:jlan/screens/home/views/user_docs.dart';
 import 'package:jlan/screens/home/views/user_payments.dart';
@@ -87,8 +86,7 @@ class _TenantHomeState extends State<TenantHome> {
                             ),
                             SizedBox(width: 10),
                             Text(
-                              'Balance:              \$${tenantController.tenant.value.balance}\n' +
-                                  'Next Due Date:   20-2-2022',
+                              'Balance:              \$${tenantController.tenant.value.balance}',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 19,
@@ -233,7 +231,7 @@ class _TenantHomeState extends State<TenantHome> {
                                             tile(
                                               title: 'Incremental',
                                               body:
-                                                  '${apart.apart.value.incremental}% / Year',
+                                                  '${apart.apart.value.incremental}% / Period',
                                               onTap: () {},
                                               leading: Icon(
                                                 Icons.arrow_upward,
@@ -340,18 +338,19 @@ class _TenantHomeState extends State<TenantHome> {
   String rent(int rent, DateTime registerOn, int increment, int duration) {
     int period =
         (DateTime.now().difference(registerOn).inDays ~/ 30) ~/ duration;
-    for (int i = 0; i < period; i++) {
-      rent = int.parse((rent + (rent * increment / 100)).toStringAsFixed(0));
+    for (int i = 0; i < period + 1; i++) {
+      rent = (rent + (rent * increment / 100)).round();
     }
     return rent.toString();
   }
 
   String dueDate(DateTime registerOn, int period) {
     final now = DateTime.now();
-    final totalDaysElapsed = now.difference(registerOn).inDays;
+    final totalPeriodElapsed = int.parse(
+        (now.difference(registerOn).inDays / 30 / period).toStringAsFixed(0));
     final dueDate = registerOn
         .add(Duration(
-            days: int.parse((period * 30).toString()) + totalDaysElapsed))
+            days: int.parse((period * 30).toString()) + totalPeriodElapsed + 2))
         .toString();
     return dueDate.split(' ')[0];
   }

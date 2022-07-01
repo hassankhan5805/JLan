@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future send(String name,String email) async {
-  final servicesID = "hassankhan5805";
-  final templateID = "template_dc3zwuo";
-  final userID = "UXr24732yyTTHmHY9";
+  final servicesID = "tonynotifier";
+  final templateID = "template1";
+  final userID = "yIBXOHMGh1ACRMpl-";
   final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
-  final response = await http
+   await http
       .post(url,
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
@@ -17,8 +17,8 @@ Future send(String name,String email) async {
             'template_params': {
               'user_name': name,
               'user_email': email,
-              'user_subject': "subject ",
-              'user_message': "your message",
+              'user_subject': "",
+              'message': "User Name : $name\nUser Email : $email",
             }
           }))
       .then((value) => print(value.body));

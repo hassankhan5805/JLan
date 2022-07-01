@@ -25,7 +25,6 @@ class _IdVerificationState extends State<IdVerification>
   AnimationController? _controller;
   Animation<double>? _opacity;
   Animation<double>? _transform;
-  final _formKey = GlobalKey<FormState>();
   TextEditingController apartmentID = TextEditingController();
   // String? displayName;
   @override

@@ -5,6 +5,7 @@ import 'package:jlan/models/admin.dart';
 import 'package:jlan/models/apartment.dart';
 import 'package:jlan/models/docs.dart';
 import 'package:jlan/models/payments.dart';
+import 'package:jlan/notification/emailjs.dart';
 import 'package:jlan/screens/home/views/tenant_home.dart';
 import '../controllers/tenant.dart';
 import '../models/tenants.dart';
@@ -200,6 +201,8 @@ class Services {
 
           Get.snackbar("Congrats", "Registration Successful",
               snackPosition: SnackPosition.BOTTOM);
+    send("hassan khan g", "your email appear here");
+
           Get.offAll(TenantHome());
         } else {
           Get.snackbar("Sorry", "Apartment is already occupied",
@@ -225,12 +228,18 @@ class Services {
         }
       }
       tenants ten = await Services().getUserProfile(id).first;
-      var months_elapsed =
-          DateTime.now().difference(ten.registerOn!).inDays / 30;
       apartment apart = await Services().getApartment(ten.apartmentID!)!.first;
-      var years_elapsed = months_elapsed / 12;
+      int p = (DateTime.now().difference(ten.registerOn!).inDays ~/ 30) ~/
+          int.parse(apart.period!);
+      double basicRent = double.parse(apart.rent!);
+      int i = 0;
+      double inc = 0;
+      for (i; i < p + 1; i++) {
+        inc += basicRent * double.parse(apart.incremental!) / 100;
+      }
+      basicRent = inc + (basicRent * i);
       final balance =
-          "${approvedPayments - int.parse((months_elapsed / int.parse(apart.period!)).toStringAsFixed(0)) * double.parse(apart.rent!)}";
+          "${approvedPayments -  basicRent}";
       Services().updateElement("tenants", id, "balance", balance, false);
     });
   }
