@@ -26,32 +26,6 @@ class _AdminPanelState extends State<AdminPanel> {
     });
   }
 
-  getData() async {
-    tenants a = await FirebaseFirestore.instance
-        .collection("tenants")
-        .doc("NajkOIFuxnbBjVxXwLqdYVbOrlr2")
-        .get()
-        .then((value) {
-      return tenants.fromJson(value.data()!);
-    });
-    print("printing registation data");
-    print(a.registerOn);
-  }
-
-  @override
-  void initState() {
-    getData();
-    // Services().updateElement("tenants", "NajkOIFuxnbBjVxXwLqdYVbOrlr2",
-    //     "registerOn", DateTime.now(), false);
-    // Services().updateElement("tenants", "YVorL6Gc6efKPfxSb4J8eivipM52",
-    //     "registerOn", DateTime.now(), false);
-    // Services().updateElement("tenants", "uWG8RgOVP1hC4BxWHcVeXdTorvI2",
-    //     "registerOn", DateTime.now(), false);
-    // Services().updateElement("tenants", "wXC3TklrDNPDCTA5eH999v2B6gn2",
-    //     "registerOn", DateTime.now(), false);
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final devSize = MediaQuery.of(context).size;

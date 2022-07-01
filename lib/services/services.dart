@@ -57,7 +57,6 @@ class Services {
           .where("occupiedBy", isEqualTo: "null")
           .snapshots()
           .map((event) {
-        print(event.docs.map((e) => apartment.fromJson(e.data())).toList());
         return event.docs.map((e) => apartment.fromJson(e.data())).toList();
       });
     } else {
@@ -220,7 +219,6 @@ class Services {
         for (int i = 0; i < e.length; i++) {
           approvedPayments += int.parse(e[i]!.amount!);
         }
-        print(approvedPayments);
       } catch (e) {
         if (e.toString().contains("no element")) {
           print("no approved payments");
@@ -236,13 +234,4 @@ class Services {
       Services().updateElement("tenants", id, "balance", balance, false);
     });
   }
-  // Future<tenants> getUserProfileNoStream() async {
-  //   FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  //   FirebaseAuth _auth = FirebaseAuth.instance;
-  //   return await _firestore
-  //       .collection("users")
-  //       .doc(_auth.currentUser!.uid)
-  //       .get()
-  //       .then((value) => tenants.fromJson(value.data()!));
-  // }
 }

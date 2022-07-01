@@ -204,10 +204,25 @@ class _TenantHomeState extends State<TenantHome> {
                                             ),
                                             tile(
                                               title: 'Rent',
-                                              body: '${apart.apart.value.rent}',
+                                              body:
+                                                  'Basic:\t${apart.apart.value.rent}\t\t\t\t\tCurrent:\t${rent(int.parse(apart.apart.value.rent!), tenantController.tenant.value.registerOn!, int.parse(apart.apart.value.incremental!), int.parse(apart.apart.value.period!))}',
                                               onTap: () {},
                                               leading: Icon(
                                                 CupertinoIcons.money_dollar,
+                                                color: ColorsRes.primary,
+                                                size: 26,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            tile(
+                                              title: 'Next Due Date',
+                                              body:
+                                                  '${dueDate(tenantController.tenant.value.registerOn!, int.parse(apart.apart.value.period!))}',
+                                              onTap: () {},
+                                              leading: Icon(
+                                                Icons.pending_actions,
                                                 color: ColorsRes.primary,
                                                 size: 26,
                                               ),
@@ -320,6 +335,25 @@ class _TenantHomeState extends State<TenantHome> {
         ),
       ),
     );
+  }
+
+  String rent(int rent, DateTime registerOn, int increment, int duration) {
+    int period =
+        (DateTime.now().difference(registerOn).inDays ~/ 30) ~/ duration;
+    for (int i = 0; i < period; i++) {
+      rent = int.parse((rent + (rent * increment / 100)).toStringAsFixed(0));
+    }
+    return rent.toString();
+  }
+
+  String dueDate(DateTime registerOn, int period) {
+    final now = DateTime.now();
+    final totalDaysElapsed = now.difference(registerOn).inDays;
+    final dueDate = registerOn
+        .add(Duration(
+            days: int.parse((period * 30).toString()) + totalDaysElapsed))
+        .toString();
+    return dueDate.split(' ')[0];
   }
 
   showDialogue(
