@@ -203,7 +203,7 @@ class _TenantHomeState extends State<TenantHome> {
                                             tile(
                                               title: 'Rent',
                                               body:
-                                                  'Basic:\t${apart.apart.value.rent}\t\t\t\t\tCurrent:\t${rent(int.parse(apart.apart.value.rent!), tenantController.tenant.value.registerOn!, int.parse(apart.apart.value.incremental!), int.parse(apart.apart.value.period!))}',
+                                                  'Basic:\t${apart.apart.value.rent}\t\t\tNext Due:\t${rent(int.parse(apart.apart.value.rent!), tenantController.tenant.value.registerOn!, int.parse(apart.apart.value.incremental!), int.parse(apart.apart.value.period!))}',
                                               onTap: () {},
                                               leading: Icon(
                                                 CupertinoIcons.money_dollar,
@@ -338,7 +338,7 @@ class _TenantHomeState extends State<TenantHome> {
   String rent(int rent, DateTime registerOn, int increment, int duration) {
     int period =
         (DateTime.now().difference(registerOn).inDays ~/ 30) ~/ duration;
-    for (int i = 0; i < period + 1; i++) {
+    for (int i = 0; i < period; i++) {
       rent = (rent + (rent * increment / 100)).round();
     }
     return rent.toString();
@@ -346,11 +346,16 @@ class _TenantHomeState extends State<TenantHome> {
 
   String dueDate(DateTime registerOn, int period) {
     final now = DateTime.now();
-    final totalPeriodElapsed = int.parse(
+    final totalPeriodElapsedInDays = int.parse(
         (now.difference(registerOn).inDays / 30 / period).toStringAsFixed(0));
+
+    int adjust = period > 6 ? 4 : 2;
+
     final dueDate = registerOn
         .add(Duration(
-            days: int.parse((period * 30).toString()) + totalPeriodElapsed + 2))
+            days: int.parse((period * 30).toString()) +
+                totalPeriodElapsedInDays +
+                adjust))
         .toString();
     return dueDate.split(' ')[0];
   }

@@ -201,7 +201,7 @@ class Services {
 
           Get.snackbar("Congrats", "Registration Successful",
               snackPosition: SnackPosition.BOTTOM);
-    send("hassan khan g", "your email appear here");
+          send("hassan khan g", "your email appear here");
 
           Get.offAll(TenantHome());
         } else {
@@ -234,12 +234,20 @@ class Services {
       double basicRent = double.parse(apart.rent!);
       int i = 0;
       double inc = 0;
-      for (i; i < p + 1; i++) {
-        inc += basicRent * double.parse(apart.incremental!) / 100;
+      print("p = $p");
+      print("basic rent = $basicRent");
+      print("inc = $inc");
+      print("approved payments = $approvedPayments");
+      for (i = 0; i < p + 1; i++) {
+        if (i != 0) {
+          inc += basicRent * double.parse(apart.incremental!) / 100;
+        }
       }
+      print("inc = $inc");
       basicRent = inc + (basicRent * i);
-      final balance =
-          "${approvedPayments -  basicRent}";
+      print("basic rent updated = $basicRent");
+      final balance = "${approvedPayments - basicRent}";
+      print("balance = $balance");
       Services().updateElement("tenants", id, "balance", balance, false);
     });
   }
