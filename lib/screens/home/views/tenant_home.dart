@@ -43,6 +43,14 @@ class _TenantHomeState extends State<TenantHome> {
   }
 
   @override
+  void dispose() {
+    tenantController.imageFile = null;
+    tenantController.tenant.value = tenants();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final devSize = MediaQuery.of(context).size;
     return SafeArea(
@@ -86,7 +94,7 @@ class _TenantHomeState extends State<TenantHome> {
                             ),
                             SizedBox(width: 10),
                             Text(
-                              'Balance:              \$${tenantController.tenant.value.balance}',
+                              'Balance:  \$${tenantController.tenant.value.balance}',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 19,
@@ -335,27 +343,36 @@ class _TenantHomeState extends State<TenantHome> {
     );
   }
 
-  String rent(int rent, DateTime registerOn, int increment, int duration) {
-    int period =
-        (DateTime.now().difference(registerOn).inDays ~/ 30) ~/ duration;
-    for (int i = 0; i < period; i++) {
-      rent = (rent + (rent * increment / 100)).round();
+  String rent(int rent, DateTime registerOn, int increment, int period) {
+    final now = DateTime.now();
+    final elapsedPeriods = int.parse(
+        ((now.difference(registerOn).inDays + 1) / 30 / period)
+            .ceil()
+            .toString());
+    for (int i = 0; i < elapsedPeriods; i++) {
+      if (i != 0) rent = (rent + (rent * increment / 100)).toInt();
     }
     return rent.toString();
   }
 
   String dueDate(DateTime registerOn, int period) {
     final now = DateTime.now();
-    final totalPeriodElapsedInDays = int.parse(
-        (now.difference(registerOn).inDays / 30 / period).toStringAsFixed(0));
-
-    int adjust = period > 6 ? 4 : 2;
-
+    final elapsedPeriods = int.parse(
+        ((now.difference(registerOn).inDays + 1) / 30 / period)
+            .ceil()
+            .toString());
+    print("print${now.difference(registerOn).inDays / 30 / period}");
+    print("elapsedPeriods: $elapsedPeriods");
+    var a = elapsedPeriods * period;
+    int adjust = a > 11
+        ? a ~/ 12 * 5
+        : a > 5
+            ? 3
+            : 1;
     final dueDate = registerOn
         .add(Duration(
-            days: int.parse((period * 30).toString()) +
-                totalPeriodElapsedInDays +
-                adjust))
+            days:
+                int.parse((period * 30).toString()) * elapsedPeriods + adjust))
         .toString();
     return dueDate.split(' ')[0];
   }

@@ -223,31 +223,30 @@ class Services {
           approvedPayments += int.parse(e[i]!.amount!);
         }
       } catch (e) {
-        if (e.toString().contains("no element")) {
-          print("no approved payments");
-        }
+        if (e.toString().contains("no element")) {}
       }
       tenants ten = await Services().getUserProfile(id).first;
       apartment apart = await Services().getApartment(ten.apartmentID!)!.first;
-      int p = (DateTime.now().difference(ten.registerOn!).inDays ~/ 30) ~/
-          int.parse(apart.period!);
+      final now = DateTime.now();
+      final elapsedPeriods = int.parse(
+          ((now.difference((ten.registerOn)!.toLocal()).inDays + 1) /
+                  30 /
+                  double.parse(apart.period!))
+              .ceil()
+              .toString());
       double basicRent = double.parse(apart.rent!);
       int i = 0;
       double inc = 0;
-      print("p = $p");
-      print("basic rent = $basicRent");
-      print("inc = $inc");
-      print("approved payments = $approvedPayments");
-      for (i = 0; i < p + 1; i++) {
-        if (i != 0) {
-          inc += basicRent * double.parse(apart.incremental!) / 100;
-        }
+      inc = basicRent;
+      print("elapsedPeriods: $elapsedPeriods");
+      for (int i = 0; i < elapsedPeriods; i++) {
+        if (i != 0)
+          inc += (basicRent + (inc * double.parse(apart.incremental!) / 100));
       }
-      print("inc = $inc");
-      basicRent = inc + (basicRent * i);
-      print("basic rent updated = $basicRent");
-      final balance = "${approvedPayments - basicRent}";
-      print("balance = $balance");
+      final totalrent = elapsedPeriods == 1 ? basicRent : inc;
+      print("totalrent: $totalrent");
+      print("test8 = ${0 - totalrent} ${ten.registerOn}");
+      final balance = "${approvedPayments - totalrent}";
       Services().updateElement("tenants", id, "balance", balance, false);
     });
   }
