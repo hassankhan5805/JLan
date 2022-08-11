@@ -27,6 +27,7 @@ class _AddApartmentState extends State<AddApartment>
   TextEditingController id = TextEditingController();
   TextEditingController incremental = TextEditingController();
   TextEditingController period = TextEditingController();
+  TextEditingController type = TextEditingController();
 
   @override
   void initState() {
@@ -131,12 +132,9 @@ class _AddApartmentState extends State<AddApartment>
                                   false, false, rent),
                               component1(Icons.apartment, 'Apartment ID', false,
                                   false, id),
-                              component1(
-                                  Icons.percent,
-                                  'Incremental (% yearly)',
-                                  false,
-                                  false,
-                                  incremental),
+                                  component1(Icons.apartment, 'Apartment Type', false,
+                                  false, type),
+                              
                               component1(Icons.arrow_upward, 'Period (months)',
                                   false, false, period,
                                   textInputType: TextInputType.number),
@@ -160,7 +158,8 @@ class _AddApartmentState extends State<AddApartment>
                                     var x = apartment(
                                         rent: rent.text,
                                         id: id.text,
-                                        incremental: incremental.text,
+                                        incremental: "0",
+                                        type:type.text,
                                         period: period.text,
                                         occupiedBy: "null");
 

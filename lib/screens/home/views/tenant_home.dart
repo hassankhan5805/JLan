@@ -237,9 +237,9 @@ class _TenantHomeState extends State<TenantHome> {
                                               height: 10,
                                             ),
                                             tile(
-                                              title: 'Incremental',
+                                              title: 'Type',
                                               body:
-                                                  '${apart.apart.value.incremental}% / Period',
+                                                  '${apart.apart.value.type}',
                                               onTap: () {},
                                               leading: Icon(
                                                 Icons.arrow_upward,
