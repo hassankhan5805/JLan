@@ -145,7 +145,7 @@ class _AddApartmentState extends State<AddApartment>
                                   FocusScope.of(context).unfocus();
                                   if (rent.text.isEmpty ||
                                       id.text.isEmpty ||
-                                      incremental.text.isEmpty ||
+                                      type.text.isEmpty ||
                                       period.text.isEmpty) {
                                     validator("All Fields Are Required ");
                                   } else if (!period.text.isNum ||
